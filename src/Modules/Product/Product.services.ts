@@ -185,6 +185,7 @@ export const ProductService = {
         }
 
         let sortOption: any = { createdAt: -1 };
+        let useCollation = false;
         if (sort) {
             switch (sort) {
                 case 'price-low':
@@ -195,9 +196,11 @@ export const ProductService = {
                     break;
                 case 'atoz':
                     sortOption = { name: 1 };
+                    useCollation = true;
                     break;
                 case 'ztoa':
                     sortOption = { name: -1 };
+                    useCollation = true;
                     break;
                 case 'features':
                     sortOption = { isFeatured: -1, createdAt: -1 };
@@ -213,6 +216,9 @@ export const ProductService = {
         const totalCount = await productModel.countDocuments(filter);
         
         let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
+        if (useCollation) {
+            query = query.collation({ locale: 'en', strength: 2 });
+        }
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);

@@ -12,6 +12,7 @@ import { BannerResolver } from "../Modules/Banner/Banner.resolvers.js";
 import { TopBannerResolver } from "../Modules/TopBanner/TopBanner.resolvers.js";
 import { DeliveryChargerResolver } from "../Modules/DeliveryCharger/DeliveryCharger.resolvers.js";
 import { FAQResolver } from "../Modules/FAQ/FAQ.resolvers.js";
+import { PaymentMethodResolver } from "../Modules/PaymentMethod/PaymentMethod.resolvers.js";
 
 const resolversArray = [
     UserResolver,
@@ -26,7 +27,8 @@ const resolversArray = [
     BannerResolver,
     TopBannerResolver,
     DeliveryChargerResolver,
-    FAQResolver
+    FAQResolver,
+    PaymentMethodResolver
 ];
 
 export const resolvers = mergeResolvers(resolversArray);

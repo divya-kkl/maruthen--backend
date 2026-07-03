@@ -17,7 +17,7 @@ export const CartResolver = {
     },
     Mutation: {
         addToCart: async (_: any, __: any, context: any) => {
-            return CartService.addToCart(__.userId, __.shopId, __.productId, __.quantity);
+            return CartService.addToCart(__.userId, __.shopId, __.productId, __.quantity, __.size);
         },
         removeFromCart: async (_: any, __: any, context: any) => {
             return CartService.removeFromCart(__.userId, __.productId);

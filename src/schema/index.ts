@@ -11,6 +11,7 @@ import { BannerType } from "../Modules/Banner/Banner.type.js";
 import { TopBannerType } from "../Modules/TopBanner/TopBanner.type.js";
 import { DeliveryChargerType } from "../Modules/DeliveryCharger/DeliveryCharger.type.js";
 import { FAQType } from "../Modules/FAQ/FAQ.type.js";
+import { PaymentMethodType } from "../Modules/PaymentMethod/PaymentMethod.type.js";
 
 export const typeDefs = [
     UserType,
@@ -25,5 +26,6 @@ export const typeDefs = [
     BannerType,
     TopBannerType,
     DeliveryChargerType,
-    FAQType
+    FAQType,
+    PaymentMethodType
 ];

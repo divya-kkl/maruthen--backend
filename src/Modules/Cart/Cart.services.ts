@@ -17,7 +17,8 @@ const populateCartItems = async (items: any[]) => {
                 quantity: item.quantity,
                 price: product.price,
                 mrp: product.mrp,
-                totalPrice: totalPrice
+                totalPrice: totalPrice,
+                size: item.size || "Default"
             });
             totalQuantity += item.quantity;
             subTotal += totalPrice;
@@ -86,7 +87,7 @@ export const CartService = {
         return formatCart(cart);
     },
 
-    async addToCart(userId: string, shopId: string, productId: string, quantity: number) {
+    async addToCart(userId: string, shopId: string, productId: string, quantity: number, size?: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             cart = await cartModel.create({ userId, shopId, products: [], status: "ACTIVE" });
@@ -98,12 +99,13 @@ export const CartService = {
             cart.status = "ACTIVE";
         }
 
-        const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId);
+        const itemSize = size || "Default";
+        const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId && (item.size || "Default") === itemSize);
         
         if (existingItemIndex > -1) {
             cart.products[existingItemIndex]!.quantity += quantity;
         } else {
-            cart.products.push({ productId, quantity });
+            cart.products.push({ productId, quantity, size: itemSize });
         }
 
         await cart.save();
