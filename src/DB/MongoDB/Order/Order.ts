@@ -35,7 +35,7 @@ export interface IOrder extends Document {
     totalAmount?: number;
     status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
-    paymentMethod: "COD" | "ONLINE" | "UPI" | "CARD";
+    paymentMethod: string;
     deliveryAddress: IDeliveryAddress;
     notes?: string;
     image?: string;
@@ -156,7 +156,6 @@ const OrderSchema = new Schema<IOrder>({
     },
     paymentMethod: { 
         type: String, 
-        enum: ["COD", "ONLINE", "UPI", "CARD"], 
         required: true 
     },
     deliveryAddress: { 

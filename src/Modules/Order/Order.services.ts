@@ -161,16 +161,12 @@ export const OrderService = {
                 mrp: product.mrp,
                 name: product.name,
                 image: product.images?.[0] || "no-image-available",
-                size: "Default"
+                size: cartProduct.size || "Default"
             });
         }
 
         const totalAmount = subTotal + (input.deliveryCharge || 0);
         const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
-
-        if (input.paymentMethod === 'cashONDelivery' || input.paymentMethod === 'Cash on Delivery') {
-            input.paymentMethod = 'COD';
-        }
 
         const orderData = {
             ...input,
