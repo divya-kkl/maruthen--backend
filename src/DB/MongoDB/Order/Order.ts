@@ -42,6 +42,9 @@ export interface IOrder extends Document {
     couponCode?: string;
     isCouponApplied: boolean;
     deliveryPartner?: IDeliveryPartner;
+    razorpayOrderId?: string;
+    razorpayPaymentId?: string;
+    razorpaySignature?: string;
 }
 
 const OrderItemSchema = new Schema<IOrderItem>({
@@ -177,7 +180,16 @@ const OrderSchema = new Schema<IOrder>({
     },
     deliveryPartner: { 
         type: DeliveryPartnerSchema
-     }
+     },
+    razorpayOrderId: {
+        type: String
+    },
+    razorpayPaymentId: {
+        type: String
+    },
+    razorpaySignature: {
+        type: String
+    }
 }, {
     timestamps: true
 });

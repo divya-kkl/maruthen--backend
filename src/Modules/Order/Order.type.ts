@@ -44,6 +44,7 @@ export const OrderType = gql`
     couponCode: String
     isCouponApplied: Boolean!
     deliveryPartner: DeliveryPartner
+    razorpayOrderId: String
     createdAt: String!
     updatedAt: String!
   }
@@ -81,11 +82,21 @@ export const OrderType = gql`
     notes: String
     image: String
     couponCode: String
+    razorpayOrderId: String
+    razorpayPaymentId: String
+    razorpaySignature: String
   }
 
   type OrderResponse {
     orders: [Order]
     totalCount: Int
+  }
+
+  type RazorpayOrderResponse {
+    success: Boolean!
+    orderId: String
+    amount: Int
+    currency: String
   }
 
   type Query {
@@ -100,5 +111,6 @@ export const OrderType = gql`
     placeOrder(input: PlaceOrderInput!): Order!
     updateOrderStatus(id: ID!, status: String!, image: String): Order!
     deleteOrder(id: ID!): String!
+    createRazorpayOrder(amount: Float!): RazorpayOrderResponse
   }
 `;
