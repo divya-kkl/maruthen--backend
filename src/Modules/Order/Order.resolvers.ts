@@ -25,6 +25,9 @@ export const OrderResolver = {
         },
         deleteOrder: async (_: any, { id }: any, context: any) => {
             return OrderService.deleteOrder(id);
+        },
+        createRazorpayOrder: async (_: any, { amount }: any, context: any) => {
+            return OrderService.createRazorpayOrder(amount);
         }
     }
 };

@@ -3,6 +3,11 @@ import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 import { userModel } from "../../DB/MongoDB/User/User.js";
 import mongoose from "mongoose";
+import Razorpay from "razorpay";
+import dotenv from "dotenv";
+dotenv.config();
+
+
 
 export const OrderService = {
     async getAllOrders(search?: string, page?: number, limit?: number) {
@@ -168,13 +173,35 @@ export const OrderService = {
         const totalAmount = subTotal + (input.deliveryCharge || 0);
         const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
 
+        let paymentStatus = "PENDING";
+        
+        if (input.paymentMethod === "RAZORPAY") {
+            const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = input;
+            
+            if (razorpayOrderId && razorpayPaymentId && razorpaySignature) {
+                const crypto = await import("crypto");
+                const body = razorpayOrderId + "|" + razorpayPaymentId;
+                const expectedSignature = crypto
+                    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET as string)
+                    .update(body.toString())
+                    .digest("hex");
+                    
+                if (expectedSignature === razorpaySignature) {
+                    paymentStatus = "PAID";
+                } else {
+                    paymentStatus = "FAILED";
+                }
+            }
+        }
+
         const orderData = {
             ...input,
             userId,
             items,
             subTotal,
             totalAmount,
-            orderNumber
+            orderNumber,
+            paymentStatus
         };
 
         const newOrder: any = await OrderModel.create(orderData);
@@ -285,5 +312,32 @@ export const OrderService = {
             createdAt: item.createdAt?.toString(),
             updatedAt: item.updatedAt?.toString(),
         };
+    },
+
+    async createRazorpayOrder(amount: number) {
+        try {
+            const razorpayInstance = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID as string,
+                key_secret: process.env.RAZORPAY_KEY_SECRET as string,
+            });
+
+            const options = {
+                amount: Math.round(amount * 100), 
+                currency: "INR",
+                receipt: `receipt_${Date.now()}`,
+                payment_capture: 1, 
+            };
+
+            const order = await razorpayInstance.orders.create(options);
+            return {
+                success: true,
+                orderId: order.id,
+                amount: order.amount,
+                currency: order.currency
+            };
+        } catch (error) {
+            console.error("Error creating Razorpay order:", error);
+            throw new Error("Failed to create Razorpay order");
+        }
     }
 };
