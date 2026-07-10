@@ -27,6 +27,7 @@ export interface IProduct extends Document {
     ironCare?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    couponCode?: string;
 }
 
 const VariantSchema: Schema = new Schema({
@@ -90,6 +91,7 @@ const ProductSchema: Schema = new Schema({
     lining: { type: String },
     washCare: { type: String },
     ironCare: { type: String },
+    couponCode: { type: String },
 }, { timestamps: true });
 
 export const productModel = (mongoose.models.Product as mongoose.Model<IProduct>) || mongoose.model<IProduct>("Product", ProductSchema);

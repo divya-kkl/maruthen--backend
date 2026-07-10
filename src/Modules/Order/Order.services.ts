@@ -2,6 +2,7 @@ import { OrderModel } from "../../DB/MongoDB/Order/Order.js";
 import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 import { userModel } from "../../DB/MongoDB/User/User.js";
+import { couponModel } from "../../DB/MongoDB/Coupon/Coupon.js";
 import mongoose from "mongoose";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
@@ -170,7 +171,22 @@ export const OrderService = {
             });
         }
 
-        const totalAmount = subTotal + (input.deliveryCharge || 0);
+        let discountAmount = 0;
+        let isCouponApplied = false;
+        
+        if (input.couponCode) {
+            const coupon = await couponModel.findOne({ code: input.couponCode });
+            if (coupon && coupon.isActive) {
+                if (coupon.type === "PERCENTAGE") {
+                    discountAmount = subTotal * (coupon.value / 100);
+                } else {
+                    discountAmount = coupon.value;
+                }
+                isCouponApplied = true;
+            }
+        }
+
+        const totalAmount = Math.max(0, subTotal + (input.deliveryCharge || 0) - discountAmount);
         const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
 
         let paymentStatus = "PENDING";
@@ -201,7 +217,9 @@ export const OrderService = {
             subTotal,
             totalAmount,
             orderNumber,
-            paymentStatus
+            paymentStatus,
+            couponCode: isCouponApplied ? input.couponCode : undefined,
+            isCouponApplied
         };
 
         const newOrder: any = await OrderModel.create(orderData);
