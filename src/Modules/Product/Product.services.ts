@@ -83,6 +83,7 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            couponCode: product.couponCode,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -214,7 +215,7 @@ export const ProductService = {
         }
 
         const totalCount = await productModel.countDocuments(filter);
-        
+
         let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
         if (useCollation) {
             query = query.collation({ locale: 'en', strength: 2 });
@@ -340,6 +341,7 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            couponCode: product.couponCode,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         };
@@ -376,6 +378,7 @@ export const ProductService = {
             lining: newProduct.lining,
             washCare: newProduct.washCare,
             ironCare: newProduct.ironCare,
+            couponCode: newProduct.couponCode,
             createdAt: newProduct.createdAt?.toString(),
             updatedAt: (newProduct as any).updatedAt?.toString()
         };
@@ -419,6 +422,7 @@ export const ProductService = {
             lining: updatedProduct.lining,
             washCare: updatedProduct.washCare,
             ironCare: updatedProduct.ironCare,
+            couponCode: updatedProduct.couponCode,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()
         };
@@ -466,6 +470,7 @@ export const ProductService = {
             lining: updatedProduct.lining,
             washCare: updatedProduct.washCare,
             ironCare: updatedProduct.ironCare,
+            couponCode: updatedProduct.couponCode,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()
         };

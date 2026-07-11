@@ -47,7 +47,16 @@ export const CouponService = {
 
     async getCouponByCode(code: string) {
         const coupon = await couponModel.findOne({ code });
-        if (!coupon) throw new Error("Coupon not found");
+        if (!coupon) throw new Error("Invalid coupon code");
+
+        if (!coupon.isActive) {
+            throw new Error("This coupon is currently inactive");
+        }
+
+        if (coupon.expireDate && new Date(coupon.expireDate) < new Date()) {
+            throw new Error("This coupon has expired");
+        }
+
         return formatCoupon(coupon);
     },
 

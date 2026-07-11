@@ -29,6 +29,7 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    couponCode: String
     createdAt: String
     updatedAt: String
   }
@@ -59,6 +60,7 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    couponCode: String
   }
 
   input UpdateProductInput {
@@ -81,6 +83,7 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    couponCode: String
   }
 
   type FilterOption {
@@ -109,6 +112,7 @@ export const ProductType = gql`
   type CategoryProductsResponse {
     products: [Product]!
     filters: CategoryFilters!
+    totalCount: Int
   }
 
   input PriceRangeInput {
@@ -144,8 +148,6 @@ export const ProductType = gql`
     updateProduct(id: ID!, input: UpdateProductInput!): Product!
     deleteProduct(id: ID!): String!
     addProductSize(productId: ID!, input: VariantInput!): Product!
-    deleteProduct(id: ID!): String!
-addProductSize(productId: ID!, input: VariantInput!): Product!
   }
 
 
