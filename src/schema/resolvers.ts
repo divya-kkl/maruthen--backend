@@ -14,6 +14,8 @@ import { DeliveryChargerResolver } from "../Modules/DeliveryCharger/DeliveryChar
 import { FAQResolver } from "../Modules/FAQ/FAQ.resolvers.js";
 import { PaymentMethodResolver } from "../Modules/PaymentMethod/PaymentMethod.resolvers.js";
 
+import { ReviewResolver } from "../Modules/Review/Review.resolvers.js";
+
 const resolversArray = [
     UserResolver,
     ProductResolver,
@@ -28,7 +30,9 @@ const resolversArray = [
     TopBannerResolver,
     DeliveryChargerResolver,
     FAQResolver,
-    PaymentMethodResolver
+    PaymentMethodResolver,
+    ReviewResolver
 ];
+
 
 export const resolvers = mergeResolvers(resolversArray);

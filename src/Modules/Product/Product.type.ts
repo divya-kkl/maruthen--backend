@@ -32,6 +32,8 @@ export const ProductType = gql`
     couponCode: String
     createdAt: String
     updatedAt: String
+    rating: Float
+    numReviews: Int
   }
 
   input VariantInput {
