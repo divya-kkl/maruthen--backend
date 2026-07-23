@@ -28,6 +28,8 @@ export interface IProduct extends Document {
     createdAt?: Date;
     updatedAt?: Date;
     couponCode?: string;
+    rating?: number;
+    numReviews?: number;
 }
 
 const VariantSchema: Schema = new Schema({
@@ -92,6 +94,14 @@ const ProductSchema: Schema = new Schema({
     washCare: { type: String },
     ironCare: { type: String },
     couponCode: { type: String },
+    rating: {
+        type:Number,
+        default: 0
+    },
+    numReviews: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true });
 
 export const productModel = (mongoose.models.Product as mongoose.Model<IProduct>) || mongoose.model<IProduct>("Product", ProductSchema);
