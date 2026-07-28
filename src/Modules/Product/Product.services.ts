@@ -54,7 +54,7 @@ export const ProductService = {
         }
 
         let totalCount = await productModel.countDocuments(filter);
-        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort({ createdAt: -1 });
+        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort({ updatedAt: -1, createdAt: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
@@ -188,7 +188,7 @@ export const ProductService = {
             }
         }
 
-        let sortOption: any = { createdAt: -1 };
+        let sortOption: any = { updatedAt: -1, createdAt: -1 };
         let useCollation = false;
         if (sort) {
             switch (sort) {
@@ -207,12 +207,12 @@ export const ProductService = {
                     useCollation = true;
                     break;
                 case 'features':
-                    sortOption = { isFeatured: -1, createdAt: -1 };
+                    sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 };
                     break;
                 case 'bestselling':
                 case 'most-relevant':
                 default:
-                    sortOption = { createdAt: -1 };
+                    sortOption = { updatedAt: -1, createdAt: -1 };
                     break;
             }
         }
@@ -612,7 +612,7 @@ export const ProductService = {
             }
         }
 
-        let sortOption: any = { createdAt: -1 };
+        let sortOption: any = { updatedAt: -1, createdAt: -1 };
         let useCollation = false;
         if (sort) {
             switch (sort) {
@@ -620,8 +620,8 @@ export const ProductService = {
                 case 'price-high': sortOption = { price: -1 }; break;
                 case 'atoz': sortOption = { name: 1 }; useCollation = true; break;
                 case 'ztoa': sortOption = { name: -1 }; useCollation = true; break;
-                case 'features': sortOption = { isFeatured: -1, createdAt: -1 }; break;
-                default: sortOption = { createdAt: -1 }; break;
+                case 'features': sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 }; break;
+                default: sortOption = { updatedAt: -1, createdAt: -1 }; break;
             }
         }
 
