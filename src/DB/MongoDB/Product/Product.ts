@@ -15,6 +15,7 @@ export interface IProduct extends Document {
     brand: string;
     isFeatured?: boolean;
     productCategoriesID: mongoose.Types.ObjectId | string;
+    tags?: (mongoose.Types.ObjectId | string)[];
     variants: IVariant[];
     description?: string;
     material?: string;
@@ -83,6 +84,10 @@ const ProductSchema: Schema = new Schema({
         ref: "ProductCategories",
         required: true
     },
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag"
+    }],
     variants: [VariantSchema],
     description: { type: String },
     material: { type: String },
