@@ -54,7 +54,7 @@ export const ProductService = {
         }
 
         let totalCount = await productModel.countDocuments(filter);
-        let query = productModel.find(filter).populate("productCategoriesID").sort({ createdAt: -1 });
+        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort({ createdAt: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
@@ -73,6 +73,7 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            tags: product.tags,
             variants: product.variants,
             description: product.description,
             material: product.material,
@@ -218,7 +219,7 @@ export const ProductService = {
 
         const totalCount = await productModel.countDocuments(filter);
 
-        let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
+        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort(sortOption);
         if (useCollation) {
             query = query.collation({ locale: 'en', strength: 2 });
         }
@@ -239,6 +240,7 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            tags: product.tags,
             variants: product.variants,
             description: product.description,
             material: product.material,
@@ -318,8 +320,61 @@ export const ProductService = {
         };
     },
 
+    async getTagFilters(code: string) {
+        const { tagModel } = await import("../../DB/MongoDB/Tag/Tag.js");
+        const tag = await tagModel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
+
+        if (!tag) {
+            return {
+                sizes: [], colors: [], brands: [],
+                stock: { inStock: 0, outOfStock: 0 },
+                price: { min: 0, max: 0 }
+            };
+        }
+
+        const filter: any = { tags: tag._id };
+        const products = await productModel.find(filter);
+
+        const sizes: any = {};
+        const colors: any = {};
+        const brands: any = {};
+        let inStock = 0;
+        let outOfStock = 0;
+        let minPrice = Infinity;
+        let maxPrice = -Infinity;
+
+        products.forEach(p => {
+            const hasStock = p.variants?.some(v => v.stock > 0);
+            if (hasStock) inStock++;
+            else outOfStock++;
+
+            if (p.price < minPrice) minPrice = p.price;
+            if (p.price > maxPrice) maxPrice = p.price;
+
+            if (p.brand) {
+                brands[p.brand] = (brands[p.brand] || 0) + 1;
+            }
+
+            p.variants?.forEach(v => {
+                if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
+                if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
+            });
+        });
+
+        if (minPrice === Infinity) minPrice = 0;
+        if (maxPrice === -Infinity) maxPrice = 0;
+
+        return {
+            sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
+            colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
+            brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
+            stock: { inStock, outOfStock },
+            price: { min: minPrice, max: maxPrice }
+        };
+    },
+
     async getProductById(id: string) {
-        const product = await productModel.findById(id).populate("productCategoriesID");
+        const product = await productModel.findById(id).populate("productCategoriesID").populate("tags");
         if (!product) {
             throw new Error("Product not found");
         }
@@ -335,6 +390,7 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            tags: product.tags,
             variants: product.variants,
             description: product.description,
             material: product.material,
@@ -361,7 +417,7 @@ export const ProductService = {
             }
         }
         let newProduct = await productModel.create(input);
-        newProduct = await newProduct.populate("productCategoriesID");
+        newProduct = await newProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
         return {
             id: newProduct._id,
             name: newProduct.name,
@@ -374,6 +430,7 @@ export const ProductService = {
             productCategoriesID: (newProduct.productCategoriesID as any)?._id?.toString() || newProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (newProduct.productCategoriesID as any)?.code || "",
             productCategories: newProduct.productCategoriesID,
+            tags: newProduct.tags,
             variants: newProduct.variants,
             description: newProduct.description,
             material: newProduct.material,
@@ -407,7 +464,7 @@ export const ProductService = {
         if (!updatedProduct) {
             throw new Error("Product not found");
         }
-        updatedProduct = await updatedProduct.populate("productCategoriesID");
+        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
         return {
             id: updatedProduct._id,
             name: updatedProduct.name,
@@ -420,6 +477,7 @@ export const ProductService = {
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
+            tags: updatedProduct.tags,
             variants: updatedProduct.variants,
             description: updatedProduct.description,
             material: updatedProduct.material,
@@ -456,7 +514,7 @@ export const ProductService = {
         product.variants.push(input);
 
         let updatedProduct = await product.save();
-        updatedProduct = await updatedProduct.populate("productCategoriesID");
+        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
 
         return {
             id: updatedProduct._id,
@@ -470,6 +528,7 @@ export const ProductService = {
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
+            tags: updatedProduct.tags,
             variants: updatedProduct.variants,
             description: updatedProduct.description,
             material: updatedProduct.material,
@@ -485,6 +544,133 @@ export const ProductService = {
             numReviews: updatedProduct.numReviews || 0,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()
+        };
+    },
+    async getProductsByTagCode(code: string, search?: string, page?: number, limit?: number, sort?: string, filters?: any) {
+        const { tagModel } = await import("../../DB/MongoDB/Tag/Tag.js");
+        const tag = await tagModel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
+
+        if (!tag) {
+            return { products: [], totalCount: 0, categories: [] };
+        }
+
+        let filter: any = {
+            tags: tag._id
+        };
+
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $and: [
+                    filter,
+                    {
+                        $or: [
+                            { name: { $regex: regex } },
+                            { brand: { $regex: regex } }
+                        ]
+                    }
+                ]
+            };
+        }
+
+        if (filters) {
+            const andConditions: any[] = [];
+            if (filters.sizes && filters.sizes.length > 0) {
+                andConditions.push({ "variants.size": { $in: filters.sizes } });
+            }
+            if (filters.colors && filters.colors.length > 0) {
+                andConditions.push({ "variants.color": { $in: filters.colors } });
+            }
+            if (filters.brands && filters.brands.length > 0) {
+                andConditions.push({ brand: { $in: filters.brands } });
+            }
+            if (filters.stock && filters.stock.length > 0) {
+                const stockConditions = [];
+                if (filters.stock.includes("In stock")) {
+                    stockConditions.push({ "variants.stock": { $gt: 0 } });
+                }
+                if (filters.stock.includes("Out of stock")) {
+                    stockConditions.push({ "variants.stock": { $lte: 0 } });
+                }
+                if (stockConditions.length > 0) {
+                    andConditions.push({ $or: stockConditions });
+                }
+            }
+            if (filters.price && (filters.price.min > 0 || filters.price.max > 0)) {
+                const priceQuery: any = {};
+                if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
+                if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
+                andConditions.push({ price: priceQuery });
+            }
+
+            if (andConditions.length > 0) {
+                if (filter.$and) {
+                    filter.$and.push(...andConditions);
+                } else {
+                    filter.$and = andConditions;
+                }
+            }
+        }
+
+        let sortOption: any = { createdAt: -1 };
+        let useCollation = false;
+        if (sort) {
+            switch (sort) {
+                case 'price-low': sortOption = { price: 1 }; break;
+                case 'price-high': sortOption = { price: -1 }; break;
+                case 'atoz': sortOption = { name: 1 }; useCollation = true; break;
+                case 'ztoa': sortOption = { name: -1 }; useCollation = true; break;
+                case 'features': sortOption = { isFeatured: -1, createdAt: -1 }; break;
+                default: sortOption = { createdAt: -1 }; break;
+            }
+        }
+
+        const { productModel } = await import("../../DB/MongoDB/Product/Product.js");
+        const totalCount = await productModel.countDocuments(filter);
+
+        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort(sortOption);
+        if (useCollation) {
+            query = query.collation({ locale: 'en', strength: 2 });
+        }
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const products = await query;
+        const mappedProducts = products.map((product) => ({
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            isFeatured: product.isFeatured,
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
+            tags: product.tags,
+            variants: product.variants,
+            description: product.description,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
+        }));
+
+        const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
+        const categoriesRaw = await productCategoryMOdel.find().sort({ createdTime: 1 });
+        const categoriesList = categoriesRaw.map((category: any) => ({
+            id: category._id,
+            name: category.name,
+            code: category.code
+        }));
+
+        const tagFilters = await ProductService.getTagFilters(code);
+
+        return {
+            products: mappedProducts,
+            filters: tagFilters,
+            totalCount,
+            categories: categoriesList
         };
     }
 };

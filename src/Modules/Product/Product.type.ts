@@ -19,6 +19,7 @@ export const ProductType = gql`
     productCategoriesID: String
     productCategoriesCode: String
     productCategories: ProductCategory
+    tags: [Tag]
     variants: [Variant]!
     description: String
     material: String
@@ -52,6 +53,7 @@ export const ProductType = gql`
     isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!
+    tags: [ID]
     variants: [VariantInput]!
     description: String
     material: String
@@ -75,6 +77,7 @@ export const ProductType = gql`
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
+    tags: [ID]
     variants: [VariantInput]
     description: String
     material: String
@@ -142,6 +145,7 @@ export const ProductType = gql`
     getProductById(id: ID!): Product
     getProduct(search: String, page: Int, limit: Int): ProductResponse
     getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
+    getProductsByTagCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
     getCategoryFilters(code: String!): CategoryFilters
   }
 
