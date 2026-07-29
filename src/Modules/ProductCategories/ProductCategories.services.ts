@@ -1,7 +1,7 @@
 import { productCategoryMOdel } from "../../DB/MongoDB/ProductCategories/ProductCategories.js";
 
 export const ProductCategoryService = {
-    async getAllProductCategories(search?: string, page?: number, limit?: number) {
+    async getAllProductCategories(search?: string, page?: number, limit?: number, status?: string) {
         let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
@@ -12,7 +12,11 @@ export const ProductCategoryService = {
                 ]
             };
         }
-        
+
+        if (status) {
+            filter.status = status;
+        }
+
         let totalCount = await productCategoryMOdel.countDocuments(filter);
         let query = productCategoryMOdel.find(filter).sort({ createdTime: -1 });
         if (page && limit) {
@@ -40,7 +44,7 @@ export const ProductCategoryService = {
 
 
     async getProductCategories(search?: string, page?: number, limit?: number) {
-        return ProductCategoryService.getAllProductCategories(search, page, limit);
+        return ProductCategoryService.getAllProductCategories(search, page, limit, "ACTIVE");
     },
 
     async getProductCategoryById(id: string) {

@@ -9,7 +9,7 @@ export const SubCategoryResolver = {
             return SubCategoryService.getSubCategoryById(__.id);
         },
         getSubCategory: async (_: any, __: any, context: any) => {
-            return SubCategoryService.getAllSubCategories(__.search, __.page, __.limit);
+            return SubCategoryService.getAllSubCategories(__.search, __.page, __.limit, "ACTIVE");
         }
     },
     Mutation: {

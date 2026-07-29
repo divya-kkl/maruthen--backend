@@ -12,7 +12,7 @@ export const ProductCategoryResolver = {
             return ProductCategoryService.getProductCategoryById(id);
         },
         getProductCategories: async (_: any, __: any, context: any) => {
-            return ProductCategoryService.getAllProductCategories(__.search, __.page, __.limit);
+            return ProductCategoryService.getAllProductCategories(__.search, __.page, __.limit, "ACTIVE");
         }
     },
     Mutation: {
