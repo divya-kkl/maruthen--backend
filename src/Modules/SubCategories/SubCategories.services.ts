@@ -1,7 +1,7 @@
 import { subCategoryModel } from "../../DB/MongoDB/SubCategories/SubCategories.js";
 
 export const SubCategoryService = {
-    async getAllSubCategories(search?: string, page?: number, limit?: number) {
+    async getAllSubCategories(search?: string, page?: number, limit?: number, status?: string) {
         let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
@@ -12,7 +12,11 @@ export const SubCategoryService = {
                 ]
             };
         }
-        
+
+        if (status) {
+            filter.status = status;
+        }
+
         let query = subCategoryModel.find(filter);
         if (page && limit) {
             const skip = (page - 1) * limit;
@@ -32,7 +36,7 @@ export const SubCategoryService = {
     },
 
     async getSubCategory(search?: string, page?: number, limit?: number) {
-        return SubCategoryService.getAllSubCategories(search, page, limit);
+        return SubCategoryService.getAllSubCategories(search, page, limit, "ACTIVE");
     },
 
     async getSubCategoryById(id: string) {
