@@ -7,7 +7,7 @@ export interface IAddress {
     apartment?: string;
     city?: string;
     state?: string;
-    pincode?: string;
+    pincode?: number;
     country?: string;
     phone?: string;
     isDefault?: boolean;
@@ -22,7 +22,7 @@ export interface IUser extends Document {
     city: string,
     state: string,
     phone_number: string,
-    pincode: string,
+    pincode: number,
     addresses?: IAddress[],
     createdTime: Date;
     gender: string;
@@ -35,7 +35,7 @@ const AddressSchema = new Schema<IAddress>({
     apartment: String,
     city: String,
     state: String,
-    pincode: String,
+    pincode: Number,
     country: String,
     phone: String,
     isDefault: { type: Boolean, default: false }
@@ -74,7 +74,7 @@ const UserSchema = new Schema<IUser>({
         type: String
     },
     pincode: {
-        type: String
+        type: Number
     },
     addresses: {
         type: [AddressSchema],

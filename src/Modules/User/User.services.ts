@@ -84,6 +84,9 @@ export const UserService = {
         if (!email) {
             throw new Error("Email is required");
         }
+        if (pincode && typeof pincode !== 'number') {
+            throw new Error("Pincode must be a number");
+        }
 
         const exist = await userModel.findOne({ email });
 
@@ -99,7 +102,7 @@ export const UserService = {
             address: address || "",
             city: city || "",
             state: state || "",
-            pincode: pincode || "",
+            pincode: pincode || undefined,
             country: country || "",
             phone: phone_number || "",
             isDefault: true
