@@ -16,7 +16,7 @@ type UserAddress {
   apartment: String
   city: String
   state: String
-  pincode: String
+  pincode: Int
   country: String
   phone: String
   isDefault: Boolean
@@ -31,7 +31,7 @@ type User {
   city: String
   address: String
   phone_number: String
-  pincode: String
+  pincode: Int
   gender: String
   addresses: [UserAddress]
 }
@@ -45,7 +45,7 @@ input RegisterInput {
   city: String
   address: String
   phone_number: String
-  pincode: String
+  pincode: Int
   gender: String
 }
 
@@ -57,7 +57,7 @@ input UserAddressInput {
   apartment: String
   city: String
   state: String
-  pincode: String
+  pincode: Int
   country: String
   phone: String
   isDefault: Boolean
@@ -71,7 +71,7 @@ input UpdateUserInput {
   city: String
   address: String
   phone_number: String
-  pincode: String
+  pincode: Int
   gender: String
   addresses: [UserAddressInput]
 }
