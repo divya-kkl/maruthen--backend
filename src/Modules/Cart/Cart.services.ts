@@ -113,13 +113,14 @@ export const CartService = {
         return formatCart(cart);
     },
 
-    async removeFromCart(userId: string, productId: string) {
+    async removeFromCart(userId: string, productId: string, size?: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             throw new Error("Cart not found");
         }
 
-        cart.products = cart.products.filter((item: any) => item.productId !== productId);
+        const itemSize = size || "Default";
+        cart.products = cart.products.filter((item: any) => !(item.productId === productId && (item.size || "Default") === itemSize));
         await cart.save();
 
         return formatCart(cart);

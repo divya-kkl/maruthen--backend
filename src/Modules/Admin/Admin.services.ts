@@ -53,7 +53,7 @@ export const AdminService = {
             role: item.role,
             createdTime: item.createdTime?.toString()
         };
-    },
+    }, 
 
     async registerAdmin(input: any = {}) {
         const { username, email, password, mobile, gender } = input;

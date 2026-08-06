@@ -20,7 +20,7 @@ export const CartResolver = {
             return CartService.addToCart(__.userId, __.shopId, __.productId, __.quantity, __.size);
         },
         removeFromCart: async (_: any, __: any, context: any) => {
-            return CartService.removeFromCart(__.userId, __.productId);
+            return CartService.removeFromCart(__.userId, __.productId, __.size);
         },
         clearCart: async (_: any, __: any, context: any) => {
             return CartService.clearCart(__.userId);
