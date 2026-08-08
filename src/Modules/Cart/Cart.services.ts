@@ -118,7 +118,6 @@ export const CartService = {
             newTotalQuantity += cart.products[existingItemIndex]!.quantity;
         }
 
-        // Validate stock if variant exists
         if (variant && newTotalQuantity > variant.stock) {
             throw new Error(`Only ${variant.stock} item(s) available in stock for size ${itemSize}`);
         }
