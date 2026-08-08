@@ -88,6 +88,18 @@ export const CartService = {
     },
 
     async addToCart(userId: string, shopId: string, productId: string, quantity: number, size?: string) {
+        const product = await productModel.findById(productId);
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        const itemSize = size || "Default";
+        const variant = product.variants?.find((v: any) => v.size === itemSize);
+
+        if (itemSize !== "Default" && !variant) {
+            throw new Error(`Variant with size ${itemSize} not found`);
+        }
+
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             cart = await cartModel.create({ userId, shopId, products: [], status: "ACTIVE" });
@@ -99,9 +111,18 @@ export const CartService = {
             cart.status = "ACTIVE";
         }
 
-        const itemSize = size || "Default";
         const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId && (item.size || "Default") === itemSize);
         
+        let newTotalQuantity = quantity;
+        if (existingItemIndex > -1) {
+            newTotalQuantity += cart.products[existingItemIndex]!.quantity;
+        }
+
+        // Validate stock if variant exists
+        if (variant && newTotalQuantity > variant.stock) {
+            throw new Error(`Only ${variant.stock} item(s) available in stock for size ${itemSize}`);
+        }
+
         if (existingItemIndex > -1) {
             cart.products[existingItemIndex]!.quantity += quantity;
         } else {
