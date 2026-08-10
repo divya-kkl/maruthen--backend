@@ -679,5 +679,62 @@ export const ProductService = {
             totalCount,
             categories: categoriesList
         };
+    },
+
+    async getRelatedProducts(productId: string, limit: number = 4) {
+        
+        
+        const currentProduct = await productModel.findById(productId);
+        if (!currentProduct) {
+            throw new Error("Product not found");
+        }
+
+        const filter: any = {
+            _id: { $ne: productId },
+            $or: [
+                { productCategoriesID: currentProduct.productCategoriesID }
+            ]
+        };
+
+        if (currentProduct.tags && currentProduct.tags.length > 0) {
+            filter.$or.push({ tags: { $in: currentProduct.tags } });
+        }
+
+        const products = await productModel.find(filter)
+            .populate("productCategoriesID")
+            .populate("tags")
+            .limit(limit)
+            .sort({ updatedAt: -1, createdAt: -1 });
+
+        return products.map((p) => ({
+            id: p._id,
+            name: p.name,
+            price: p.price,
+            mrp: p.mrp,
+            discountPercentage: p.discountPercentage,
+            images: p.images,
+            brand: p.brand,
+            hasSize: p.hasSize,
+            isFeatured: p.isFeatured,
+            productCategoriesID: (p.productCategoriesID as any)?._id?.toString() || p.productCategoriesID?.toString() || "",
+            productCategoriesCode: (p.productCategoriesID as any)?.code || "",
+            productCategories: p.productCategoriesID,
+            tags: p.tags,
+            variants: p.variants,
+            description: p.description,
+            material: p.material,
+            embellishment: p.embellishment,
+            neck: p.neck,
+            sleeves: p.sleeves,
+            closure: p.closure,
+            lining: p.lining,
+            washCare: p.washCare,
+            ironCare: p.ironCare,
+            couponCode: p.couponCode,
+            rating: p.rating || 0,
+            numReviews: p.numReviews || 0,
+            createdAt: p.createdAt?.toString(),
+            updatedAt: (p as any).updatedAt?.toString()
+        }));
     }
 };
