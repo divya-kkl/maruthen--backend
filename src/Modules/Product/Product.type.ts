@@ -15,6 +15,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]!
     brand: String!
+    hasSize: Boolean
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
@@ -50,6 +51,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]!
     brand: String!
+    hasSize: Boolean
     isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!
@@ -74,6 +76,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]
     brand: String
+    hasSize: Boolean
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String

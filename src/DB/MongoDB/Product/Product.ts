@@ -13,6 +13,7 @@ export interface IProduct extends Document {
     discountPercentage: number;
     images: string[];
     brand: string;
+    hasSize?: boolean;
     isFeatured?: boolean;
     productCategoriesID: mongoose.Types.ObjectId | string;
     tags?: (mongoose.Types.ObjectId | string)[];
@@ -74,6 +75,10 @@ const ProductSchema: Schema = new Schema({
     brand: {
         type: String,
         required: true
+    },
+    hasSize: {
+        type: Boolean,
+        default: true
     },
     isFeatured: {
         type: Boolean,
