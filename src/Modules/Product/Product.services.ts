@@ -43,6 +43,13 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
+                filters.dynamicFilters.forEach((df: any) => {
+                    if (df.name === "Material" && df.values.length > 0) {
+                        andConditions.push({ material: { $in: df.values } });
+                    }
+                });
+            }
 
             if (andConditions.length > 0) {
                 if (Object.keys(filter).length > 0) {
@@ -179,6 +186,14 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
+                filters.dynamicFilters.forEach((df: any) => {
+                    if (df.name === "Material" && df.values.length > 0) {
+                        const regexes = df.values.map((v: string) => new RegExp(`^${v.trim()}$`, 'i'));
+                        andConditions.push({ material: { $in: regexes } });
+                    }
+                });
+            }
 
             if (andConditions.length > 0) {
                 if (filter.$and) {
@@ -287,6 +302,7 @@ export const ProductService = {
         const sizes: any = {};
         const colors: any = {};
         const brands: any = {};
+        const materials: any = {};
         let inStock = 0;
         let outOfStock = 0;
         let minPrice = Infinity;
@@ -304,6 +320,11 @@ export const ProductService = {
                 brands[p.brand] = (brands[p.brand] || 0) + 1;
             }
 
+            if (p.material) {
+                const normalizedMaterial = p.material.trim().split(/\s+/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                materials[normalizedMaterial] = (materials[normalizedMaterial] || 0) + 1;
+            }
+
             p.variants?.forEach(v => {
                 if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
                 if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
@@ -313,12 +334,21 @@ export const ProductService = {
         if (minPrice === Infinity) minPrice = 0;
         if (maxPrice === -Infinity) maxPrice = 0;
 
+        const dynamicFilters = [];
+        if (Object.keys(materials).length > 0) {
+            dynamicFilters.push({
+                name: "Material",
+                options: Object.entries(materials).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+
         return {
             sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
-            price: { min: minPrice, max: maxPrice }
+            price: { min: minPrice, max: maxPrice },
+            dynamicFilters
         };
     },
 
@@ -330,7 +360,8 @@ export const ProductService = {
             return {
                 sizes: [], colors: [], brands: [],
                 stock: { inStock: 0, outOfStock: 0 },
-                price: { min: 0, max: 0 }
+                price: { min: 0, max: 0 },
+                dynamicFilters: []
             };
         }
 
@@ -340,6 +371,7 @@ export const ProductService = {
         const sizes: any = {};
         const colors: any = {};
         const brands: any = {};
+        const materials: any = {};
         let inStock = 0;
         let outOfStock = 0;
         let minPrice = Infinity;
@@ -357,6 +389,11 @@ export const ProductService = {
                 brands[p.brand] = (brands[p.brand] || 0) + 1;
             }
 
+            if (p.material) {
+                const normalizedMaterial = p.material.trim().split(/\s+/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                materials[normalizedMaterial] = (materials[normalizedMaterial] || 0) + 1;
+            }
+
             p.variants?.forEach(v => {
                 if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
                 if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
@@ -366,12 +403,21 @@ export const ProductService = {
         if (minPrice === Infinity) minPrice = 0;
         if (maxPrice === -Infinity) maxPrice = 0;
 
+        const dynamicFilters = [];
+        if (Object.keys(materials).length > 0) {
+            dynamicFilters.push({
+                name: "Material",
+                options: Object.entries(materials).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+
         return {
             sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
-            price: { min: minPrice, max: maxPrice }
+            price: { min: minPrice, max: maxPrice },
+            dynamicFilters
         };
     },
 
@@ -607,6 +653,13 @@ export const ProductService = {
                 if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
+            }
+            if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
+                filters.dynamicFilters.forEach((df: any) => {
+                    if (df.name === "Material" && df.values.length > 0) {
+                        andConditions.push({ material: { $in: df.values } });
+                    }
+                });
             }
 
             if (andConditions.length > 0) {

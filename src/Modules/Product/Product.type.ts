@@ -99,6 +99,11 @@ export const ProductType = gql`
     count: Int!
   }
 
+  type DynamicFilter {
+    name: String!
+    options: [FilterOption]!
+  }
+
   type PriceRange {
     min: Float!
     max: Float!
@@ -115,6 +120,7 @@ export const ProductType = gql`
     brands: [FilterOption]!
     stock: StockFilter!
     price: PriceRange!
+    dynamicFilters: [DynamicFilter]!
   }
 
   type CategoryProductsResponse {
@@ -128,12 +134,18 @@ export const ProductType = gql`
     max: Float
   }
 
+  input DynamicFilterInput {
+    name: String!
+    values: [String]!
+  }
+
   input ProductFilterInput {
     sizes: [String]
     colors: [String]
     brands: [String]
     stock: [String]
     price: PriceRangeInput
+    dynamicFilters: [DynamicFilterInput]
   }
 
   type ProductResponse {
