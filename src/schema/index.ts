@@ -14,6 +14,7 @@ import { FAQType } from "../Modules/FAQ/FAQ.type.js";
 import { PaymentMethodType } from "../Modules/PaymentMethod/PaymentMethod.type.js";
 import { ReviewType } from "../Modules/Review/Review.type.js";
 import { TagType } from "../Modules/Tag/Tag.type.js";
+import { WishlistType } from "../Modules/Wishlist/Wishlist.type.js";
 export const typeDefs = [
     UserType,
     ProductType,
@@ -30,6 +31,7 @@ export const typeDefs = [
     FAQType,
     PaymentMethodType,
     ReviewType,
-    TagType
+    TagType,
+    WishlistType
 ];
 
