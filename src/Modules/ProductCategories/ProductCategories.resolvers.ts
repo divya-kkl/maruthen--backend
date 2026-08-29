@@ -29,7 +29,7 @@ export const ProductCategoryResolver = {
     ProductCategory: {
         subCategories: async (parent: any) => {
             const allSubCategories = await SubCategoryService.getAllSubCategories();
-            return allSubCategories.filter((sub: any) => sub.productCategoryId === parent.id);
+            return allSubCategories.filter((sub: any) => sub.productCategoryId === parent.id.toString());
         }
     }
 };
