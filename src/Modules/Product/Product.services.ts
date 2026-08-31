@@ -61,7 +61,7 @@ export const ProductService = {
         }
 
         let totalCount = await productModel.countDocuments(filter);
-        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort({ updatedAt: -1, createdAt: -1 });
+        let query = productModel.find(filter).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags").sort({ updatedAt: -1, createdAt: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
@@ -81,6 +81,9 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
             tags: product.tags,
             variants: product.variants,
             description: product.description,
@@ -126,7 +129,6 @@ export const ProductService = {
     },
 
     async getProductsByCategoryCode(code: string, search?: string, page?: number, limit?: number, sort?: string, filters?: any) {
-        // First find the category by code
         const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
 
@@ -235,7 +237,7 @@ export const ProductService = {
 
         const totalCount = await productModel.countDocuments(filter);
 
-        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort(sortOption);
+        let query = productModel.find(filter).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags").sort(sortOption);
         if (useCollation) {
             query = query.collation({ locale: 'en', strength: 2 });
         }
@@ -257,6 +259,9 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
             tags: product.tags,
             variants: product.variants,
             description: product.description,
@@ -422,7 +427,7 @@ export const ProductService = {
     },
 
     async getProductById(id: string) {
-        const product = await productModel.findById(id).populate("productCategoriesID").populate("tags");
+        const product = await productModel.findById(id).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags");
         if (!product) {
             throw new Error("Product not found");
         }
@@ -439,6 +444,9 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
             tags: product.tags,
             variants: product.variants,
             description: product.description,
@@ -466,7 +474,7 @@ export const ProductService = {
             }
         }
         let newProduct = await productModel.create(input);
-        newProduct = await newProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
+        newProduct = await newProduct.populate([{ path: "productCategoriesID" }, { path: "productSubCategoriesID" }, { path: "tags" }]);
         return {
             id: newProduct._id,
             name: newProduct.name,
@@ -480,6 +488,9 @@ export const ProductService = {
             productCategoriesID: (newProduct.productCategoriesID as any)?._id?.toString() || newProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (newProduct.productCategoriesID as any)?.code || "",
             productCategories: newProduct.productCategoriesID,
+            productSubCategoriesID: (newProduct.productSubCategoriesID as any)?._id?.toString() || newProduct.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (newProduct.productSubCategoriesID as any)?.code || "",
+            productSubCategories: newProduct.productSubCategoriesID,
             tags: newProduct.tags,
             variants: newProduct.variants,
             description: newProduct.description,
@@ -514,7 +525,7 @@ export const ProductService = {
         if (!updatedProduct) {
             throw new Error("Product not found");
         }
-        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
+        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "productSubCategoriesID" }, { path: "tags" }]);
         return {
             id: updatedProduct._id,
             name: updatedProduct.name,
@@ -528,6 +539,9 @@ export const ProductService = {
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
+            productSubCategoriesID: (updatedProduct.productSubCategoriesID as any)?._id?.toString() || updatedProduct.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (updatedProduct.productSubCategoriesID as any)?.code || "",
+            productSubCategories: updatedProduct.productSubCategoriesID,
             tags: updatedProduct.tags,
             variants: updatedProduct.variants,
             description: updatedProduct.description,
@@ -565,7 +579,7 @@ export const ProductService = {
         product.variants.push(input);
 
         let updatedProduct = await product.save();
-        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "tags" }]);
+        updatedProduct = await updatedProduct.populate([{ path: "productCategoriesID" }, { path: "productSubCategoriesID" }, { path: "tags" }]);
 
         return {
             id: updatedProduct._id,
@@ -580,6 +594,9 @@ export const ProductService = {
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
+            productSubCategoriesID: (updatedProduct.productSubCategoriesID as any)?._id?.toString() || updatedProduct.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (updatedProduct.productSubCategoriesID as any)?.code || "",
+            productSubCategories: updatedProduct.productSubCategoriesID,
             tags: updatedProduct.tags,
             variants: updatedProduct.variants,
             description: updatedProduct.description,
@@ -687,7 +704,7 @@ export const ProductService = {
         const { productModel } = await import("../../DB/MongoDB/Product/Product.js");
         const totalCount = await productModel.countDocuments(filter);
 
-        let query = productModel.find(filter).populate("productCategoriesID").populate("tags").sort(sortOption);
+        let query = productModel.find(filter).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags").sort(sortOption);
         if (useCollation) {
             query = query.collation({ locale: 'en', strength: 2 });
         }
@@ -709,6 +726,9 @@ export const ProductService = {
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
             tags: product.tags,
             variants: product.variants,
             description: product.description,
@@ -754,7 +774,7 @@ export const ProductService = {
         }
 
         const products = await productModel.find(filter)
-            .populate("productCategoriesID")
+            .populate("productCategoriesID").populate("productSubCategoriesID")
             .populate("tags")
             .limit(limit)
             .sort({ updatedAt: -1, createdAt: -1 });
@@ -772,6 +792,9 @@ export const ProductService = {
             productCategoriesID: (p.productCategoriesID as any)?._id?.toString() || p.productCategoriesID?.toString() || "",
             productCategoriesCode: (p.productCategoriesID as any)?.code || "",
             productCategories: p.productCategoriesID,
+            productSubCategoriesID: (p.productSubCategoriesID as any)?._id?.toString() || p.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (p.productSubCategoriesID as any)?.code || "",
+            productSubCategories: p.productSubCategoriesID,
             tags: p.tags,
             variants: p.variants,
             description: p.description,
