@@ -20,6 +20,9 @@ export const ProductType = gql`
     productCategoriesID: String
     productCategoriesCode: String
     productCategories: ProductCategory
+    productSubCategoriesID: String
+    productSubCategoriesCode: String
+    productSubCategories: SubCategory
     tags: [Tag]
     variants: [Variant]!
     description: String
@@ -55,6 +58,8 @@ export const ProductType = gql`
     isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!
+    productSubCategoriesID: String
+    productSubCategoriesCode: String
     tags: [ID]
     variants: [VariantInput]!
     description: String
@@ -80,6 +85,8 @@ export const ProductType = gql`
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
+    productSubCategoriesID: String
+    productSubCategoriesCode: String
     tags: [ID]
     variants: [VariantInput]
     description: String
@@ -174,3 +181,4 @@ export const ProductType = gql`
 
 
 `;
+// Trigger reload
