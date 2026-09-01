@@ -17,6 +17,7 @@ import { PaymentMethodResolver } from "../Modules/PaymentMethod/PaymentMethod.re
 import { ReviewResolver } from "../Modules/Review/Review.resolvers.js";
 import { TagResolver } from "../Modules/Tag/Tag.resolvers.js";
 import { WishlistResolver } from "../Modules/Wishlist/Wishlist.resolvers.js";
+import { RateResolver } from "../Modules/Rate/Rate.resolvers.js";
 const resolversArray = [
     UserResolver,
     ProductResolver,
@@ -34,7 +35,8 @@ const resolversArray = [
     PaymentMethodResolver,
     ReviewResolver,
     TagResolver,
-    WishlistResolver
+    WishlistResolver,
+    RateResolver
 ];
 
 
