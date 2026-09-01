@@ -8,7 +8,9 @@ import Razorpay from "razorpay";
 import dotenv from "dotenv";
 dotenv.config();
 
-
+import { Resend } from 'resend';
+const resend = new Resend(process.env.EMAIL_RESEND_API_KEY);
+ 
 
 export const OrderService = {
     async getAllOrders(search?: string, page?: number, limit?: number) {
@@ -252,6 +254,31 @@ export const OrderService = {
                         isDefault: user.addresses.length === 0
                     });
                     await user.save();
+                }
+
+                // Send Order Confirmation Email using Resend
+                if (user.email) {
+                    try {
+                        await resend.emails.send({
+                            from: 'sankar@kitzo.in',
+                            to: user.email,
+                            subject: `Order Confirmation - ${orderNumber}`,
+                            html: `
+                                <div style="font-family: Arial, sans-serif; padding: 20px;">
+                                    <h2 style="color: #4CAF50;">Order Confirmed!</h2>
+                                    <p>Hi ${user.username || 'Customer'},</p>
+                                    <p>Thank you for shopping with us. Your order <strong>${orderNumber}</strong> has been placed successfully.</p>
+                                    <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+                                    <p><strong>Payment Method:</strong> ${input.paymentMethod}</p>
+                                    <br/>
+                                    <p>We will notify you once your order is shipped!</p>
+                                </div>
+                            `
+                        });
+                        console.log("Order confirmation email sent to:", user.email);
+                    } catch (emailError) {
+                        console.error("Failed to send order confirmation email:", emailError);
+                    }
                 }
             }
         } catch(e) {
