@@ -3,16 +3,13 @@ import { UserService } from "./User.services.js";
 export const UserResolver = {
     Query: {
         getAllUser: async (_: any, __: any, context: any) => {
-            if (!context.user) throw new Error("Unauthorized: Bearer token is missing or invalid");
             return UserService.getAllUsers(__.search, __.page, __.limit);
         },
 
         getUserById: async (_: any, __: any, context: any) => {
-            if (!context.user) throw new Error("Unauthorized: Bearer token is missing or invalid");
             return UserService.getUserById(__.id);
         },
         getUser: async (_: any, __: any, context: any) => {
-            if (!context.user) throw new Error("Unauthorized: Bearer token is missing or invalid");
             return UserService.getAllUsers(__.search, __.page, __.limit);
         }
     },
@@ -24,11 +21,9 @@ export const UserResolver = {
             return UserService.loginUser(__.input);
         },
         updateUser: async (_: any, __: any, context: any) => {
-            if (!context.user) throw new Error("Unauthorized: Bearer token is missing or invalid");
             return UserService.updateUser(__.id, __.input);
         },
         deleteUser: async (_: any, __: any, context: any) => {
-            if (!context.user) throw new Error("Unauthorized: Bearer token is missing or invalid");
             return UserService.deleteUser(__.id);
         },
     }
