@@ -13,7 +13,7 @@ export const BannerResolver = {
         }
     },
     Mutation: {
-        createBanner: async (_: any, { input }: any, context: any) => {
+        createBanner: async (_: any, input: any, context: any) => {
             return BannerService.createBanner(input);
         },
         updateBanner: async (_: any, { id, input }: any, context: any) => {

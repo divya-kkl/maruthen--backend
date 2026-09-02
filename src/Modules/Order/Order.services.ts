@@ -8,9 +8,7 @@ import Razorpay from "razorpay";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Resend } from 'resend';
-const resend = new Resend(process.env.EMAIL_RESEND_API_KEY);
- 
+import { sendEmail } from "../../helpers/resend.js";
 
 export const OrderService = {
     async getAllOrders(search?: string, page?: number, limit?: number) {
@@ -37,27 +35,27 @@ export const OrderService = {
         const orders = ordersResult
             .filter((item: any) => item.userId && item.orderNumber && item.createdAt)
             .map((item: any) => ({
-            id: item._id,
-            userId: item.userId?.toString(),
-            shopDetails: item.shopDetails,
-            orderNumber: item.orderNumber,
-            items: item.items,
-            subTotal: item.subTotal,
-            deliveryCharge: item.deliveryCharge,
-            totalAmount: item.totalAmount,
-            status: item.status,
-            paymentStatus: item.paymentStatus,
-            paymentMethod: item.paymentMethod,
-            deliveryAddress: item.deliveryAddress,
-            notes: item.notes,
-            image: item.image,
-            couponCode: item.couponCode,
-            isCouponApplied: item.isCouponApplied,
-            deliveryPartner: item.deliveryPartner,
-            createdAt: item.createdAt?.toString(),
-            updatedAt: item.updatedAt?.toString(),
-        }));
-        
+                id: item._id,
+                userId: item.userId?.toString(),
+                shopDetails: item.shopDetails,
+                orderNumber: item.orderNumber,
+                items: item.items,
+                subTotal: item.subTotal,
+                deliveryCharge: item.deliveryCharge,
+                totalAmount: item.totalAmount,
+                status: item.status,
+                paymentStatus: item.paymentStatus,
+                paymentMethod: item.paymentMethod,
+                deliveryAddress: item.deliveryAddress,
+                notes: item.notes,
+                image: item.image,
+                couponCode: item.couponCode,
+                isCouponApplied: item.isCouponApplied,
+                deliveryPartner: item.deliveryPartner,
+                createdAt: item.createdAt?.toString(),
+                updatedAt: item.updatedAt?.toString(),
+            }));
+
         return {
             orders,
             totalCount
@@ -75,10 +73,10 @@ export const OrderService = {
             throw new Error("Unauthorized: Please login to get addresses");
         }
         const userId = context.user.id;
-        
+
         const user = await userModel.findById(userId);
         const addresses: any[] = [];
-        
+
         if (user && user.addresses && user.addresses.length > 0) {
             for (const addr of user.addresses) {
                 addresses.push({
@@ -96,7 +94,7 @@ export const OrderService = {
 
         const orders = await OrderModel.find({ userId }).sort({ createdAt: -1 });
         const seen = new Set();
-        
+
         for (const order of orders) {
             if (order.deliveryAddress) {
                 const addr = order.deliveryAddress;
@@ -107,7 +105,7 @@ export const OrderService = {
                 }
             }
         }
-        
+
         return addresses;
     },
 
@@ -175,7 +173,7 @@ export const OrderService = {
 
         let discountAmount = 0;
         let isCouponApplied = false;
-        
+
         if (input.couponCode) {
             const coupon = await couponModel.findOne({ code: input.couponCode });
             if (coupon && coupon.isActive) {
@@ -192,10 +190,10 @@ export const OrderService = {
         const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
 
         let paymentStatus = "PENDING";
-        
+
         if (input.paymentMethod === "RAZORPAY") {
             const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = input;
-            
+
             if (razorpayOrderId && razorpayPaymentId && razorpaySignature) {
                 const crypto = await import("crypto");
                 const body = razorpayOrderId + "|" + razorpayPaymentId;
@@ -203,7 +201,7 @@ export const OrderService = {
                     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET as string)
                     .update(body.toString())
                     .digest("hex");
-                    
+
                 if (expectedSignature === razorpaySignature) {
                     paymentStatus = "PAID";
                 } else {
@@ -231,17 +229,17 @@ export const OrderService = {
             const user = await userModel.findById(userId);
             if (user) {
                 const deliveryAddr = input.deliveryAddress;
-                const exists = user.addresses?.some(addr => 
-                    addr.phone === deliveryAddr.phone && 
-                    addr.address === deliveryAddr.street && 
+                const exists = user.addresses?.some(addr =>
+                    addr.phone === deliveryAddr.phone &&
+                    addr.address === deliveryAddr.street &&
                     addr.city === deliveryAddr.city
                 );
-                
+
                 if (!exists) {
                     const nameParts = deliveryAddr.name ? deliveryAddr.name.split(" ") : [];
                     const firstName = nameParts.length > 0 ? nameParts[0] : "";
                     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
-                    
+
                     user.addresses = user.addresses || [];
                     user.addresses.push({
                         firstName: firstName,
@@ -259,8 +257,7 @@ export const OrderService = {
                 // Send Order Confirmation Email using Resend
                 if (user.email) {
                     try {
-                        await resend.emails.send({
-                            from: 'sankar@kitzo.in',
+                        await sendEmail({
                             to: user.email,
                             subject: `Order Confirmation - ${orderNumber}`,
                             html: `
@@ -281,7 +278,7 @@ export const OrderService = {
                     }
                 }
             }
-        } catch(e) {
+        } catch (e) {
             console.error("Failed to save delivery address to user profile", e);
         }
 
@@ -367,10 +364,10 @@ export const OrderService = {
             });
 
             const options = {
-                amount: Math.round(amount * 100), 
+                amount: Math.round(amount * 100),
                 currency: "INR",
                 receipt: `receipt_${Date.now()}`,
-                payment_capture: 1, 
+                payment_capture: 1,
             };
 
             const order = await razorpayInstance.orders.create(options);

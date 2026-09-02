@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBanner extends Document {
-    backgroundImage: string;
+    backgroundImages: string[];
     sideImage: string;
     sideContent: string;
     bannerType?: string;
@@ -17,7 +17,7 @@ export interface IBanner extends Document {
 }
 
 const BannerSchema = new Schema<IBanner>({
-    backgroundImage: { type: String, required: true },
+    backgroundImages: { type: [String], required: true },
     sideImage: { type: String },
     sideContent: { type: String },
     bannerType: { type: String, enum: ['FIRST', 'SECOND', 'THIRD'], default: 'FIRST' },

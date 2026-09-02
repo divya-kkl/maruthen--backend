@@ -18,6 +18,8 @@ import { ReviewResolver } from "../Modules/Review/Review.resolvers.js";
 import { TagResolver } from "../Modules/Tag/Tag.resolvers.js";
 import { WishlistResolver } from "../Modules/Wishlist/Wishlist.resolvers.js";
 import { RateResolver } from "../Modules/Rate/Rate.resolvers.js";
+import { ForgotPasswordResolver } from "../Modules/ForgetPassword/ForgotPassword.resolvers.js";
+
 const resolversArray = [
     UserResolver,
     ProductResolver,
@@ -36,7 +38,8 @@ const resolversArray = [
     ReviewResolver,
     TagResolver,
     WishlistResolver,
-    RateResolver
+    RateResolver,
+    ForgotPasswordResolver
 ];
 
 

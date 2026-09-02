@@ -3,7 +3,7 @@ import { gql } from "apollo-server-express";
 export const BannerType = gql`
   type Banner {
     id: ID!
-    backgroundImage: String!
+    backgroundImages: [String!]!
     sideImage: String
     sideContent: String
     bannerType: String
@@ -19,7 +19,7 @@ export const BannerType = gql`
   }
 
   input BannerInput {
-    backgroundImage: String!
+    backgroundImages: [String!]!
     sideImage: String
     sideContent: String
     bannerType: String
@@ -33,7 +33,7 @@ export const BannerType = gql`
   }
 
   input UpdateBannerInput {
-    backgroundImage: String
+    backgroundImages: [String!]
     sideImage: String
     sideContent: String
     bannerType: String
