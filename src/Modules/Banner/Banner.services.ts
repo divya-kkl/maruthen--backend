@@ -6,7 +6,7 @@ export const BannerService = {
         const banners = await BannerModel.find(query).sort({ createdAt: -1 });
         return banners.map((banner: any) => ({
             id: banner._id,
-            backgroundImage: banner.backgroundImage || "",
+            backgroundImages: banner.backgroundImages || [],
             sideImage: banner.sideImage,
             sideContent: banner.sideContent,
             bannerType: banner.bannerType,
@@ -28,7 +28,7 @@ export const BannerService = {
         const banners = await BannerModel.find(query).sort({ createdAt: -1 });
         return banners.map((banner: any) => ({
             id: banner._id,
-            backgroundImage: banner.backgroundImage || "",
+            backgroundImages: banner.backgroundImages || [],
             sideImage: banner.sideImage,
             sideContent: banner.sideContent,
             bannerType: banner.bannerType,
@@ -49,7 +49,7 @@ export const BannerService = {
         if (!banner) throw new Error("Banner not found");
         return {
             id: banner._id,
-            backgroundImage: banner.backgroundImage || "",
+            backgroundImages: banner.backgroundImages || [],
             sideImage: banner.sideImage,
             sideContent: banner.sideContent,
             bannerType: banner.bannerType,
@@ -69,7 +69,7 @@ export const BannerService = {
         const newBanner: any = await BannerModel.create(input);
         return {
             id: newBanner._id,
-            backgroundImage: newBanner.backgroundImage || "",
+            backgroundImages: newBanner.backgroundImages || [],
             sideImage: newBanner.sideImage,
             sideContent: newBanner.sideContent,
             bannerType: newBanner.bannerType,
@@ -94,7 +94,7 @@ export const BannerService = {
         if (!updatedBanner) throw new Error("Banner not found");
         return {
             id: updatedBanner._id,
-            backgroundImage: updatedBanner.backgroundImage || "",
+            backgroundImages: updatedBanner.backgroundImages || [],
             sideImage: updatedBanner.sideImage,
             sideContent: updatedBanner.sideContent,
             bannerType: updatedBanner.bannerType,

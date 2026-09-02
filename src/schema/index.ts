@@ -16,6 +16,8 @@ import { ReviewType } from "../Modules/Review/Review.type.js";
 import { TagType } from "../Modules/Tag/Tag.type.js";
 import { WishlistType } from "../Modules/Wishlist/Wishlist.type.js";
 import { RateType } from "../Modules/Rate/Rate.type.js";
+import { ForgotPasswordType } from "../Modules/ForgetPassword/ForgotPassword.type.js";
+
 export const typeDefs = [
     UserType,
     ProductType,
@@ -34,6 +36,7 @@ export const typeDefs = [
     ReviewType,
     TagType,
     WishlistType,
-    RateType
+    RateType,
+    ForgotPasswordType
 ];
 
