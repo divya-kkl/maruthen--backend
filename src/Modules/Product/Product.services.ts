@@ -124,6 +124,130 @@ export const ProductService = {
 
 
 
+    async searchProducts(search?: string, page?: number, limit?: number, filters?: any) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { name: { $regex: regex } },
+                    { brand: { $regex: regex } }
+                ]
+            };
+        }
+
+        if (filters) {
+            const andConditions: any[] = [];
+
+            if (filters.sizes && filters.sizes.length > 0) {
+                andConditions.push({ "variants.size": { $in: filters.sizes } });
+            }
+            if (filters.colors && filters.colors.length > 0) {
+                andConditions.push({ "variants.color": { $in: filters.colors } });
+            }
+            if (filters.brands && filters.brands.length > 0) {
+                andConditions.push({ brand: { $in: filters.brands } });
+            }
+            if (filters.stock && filters.stock.length > 0) {
+                const stockConditions = [];
+                if (filters.stock.includes("In stock")) {
+                    stockConditions.push({ "variants.stock": { $gt: 0 } });
+                }
+                if (filters.stock.includes("Out of stock")) {
+                    stockConditions.push({ "variants.stock": { $lte: 0 } });
+                }
+                if (stockConditions.length > 0) {
+                    andConditions.push({ $or: stockConditions });
+                }
+            }
+            if (filters.price && (filters.price.min > 0 || filters.price.max > 0)) {
+                const priceQuery: any = {};
+                if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
+                if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
+                andConditions.push({ price: priceQuery });
+            }
+            if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
+                filters.dynamicFilters.forEach((df: any) => {
+                    if (df.name === "Material" && df.values.length > 0) {
+                        andConditions.push({ material: { $in: df.values } });
+                    }
+                });
+            }
+
+            if (andConditions.length > 0) {
+                if (Object.keys(filter).length > 0) {
+                    filter = { $and: [filter, ...andConditions] };
+                } else {
+                    filter = { $and: andConditions };
+                }
+            }
+        }
+
+        let totalCount = await productModel.countDocuments(filter);
+        let query = productModel.find(filter).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags").sort({ updatedAt: -1, createdAt: -1 });
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+
+        const products = await query;
+        const mappedProducts = products.map((product) => ({
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            hasSize: product.hasSize,
+            isFeatured: product.isFeatured,
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
+            tags: product.tags,
+            variants: product.variants,
+            description: product.description,
+            material: product.material,
+            embellishment: product.embellishment,
+            neck: product.neck,
+            sleeves: product.sleeves,
+            closure: product.closure,
+            lining: product.lining,
+            washCare: product.washCare,
+            ironCare: product.ironCare,
+            couponCode: product.couponCode,
+            rating: product.rating || 0,
+            numReviews: product.numReviews || 0,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
+        }));
+
+        const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
+        const categoriesRaw = await productCategoryMOdel.find().sort({ createdTime: 1 });
+        const categoriesList = categoriesRaw.map((category: any) => ({
+            id: category._id,
+            name: category.name,
+            code: category.code,
+            description: category.description,
+            imageUrl: category.imageUrl,
+            status: category.status,
+            parentCategoryId: category.parentCategoryId?.toString(),
+            createdTime: category.createdTime?.toString()
+        }));
+
+        return {
+            products: mappedProducts,
+            totalCount,
+            categories: categoriesList
+        };
+    },
+
+
+
+
     async getProduct(search?: string, page?: number, limit?: number) {
         return ProductService.getAllProducts(search, page, limit);
     },
