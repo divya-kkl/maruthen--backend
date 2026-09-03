@@ -23,7 +23,10 @@ export const ProductResolver = {
         },
         getRelatedProducts: async (_: any, { productId, limit }:{ productId: string, limit?: number}) =>{
             return await ProductService.getRelatedProducts( productId, limit);
-        }
+        },
+        searchProducts: async (_: any, __: any, context: any) => {
+            return ProductService.searchProducts(__.search, __.page, __.limit, __.filters);
+        },
     },
     Mutation: {
         createProduct: async (_: any, __: any, context: any) => {
