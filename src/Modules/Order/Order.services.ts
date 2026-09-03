@@ -8,6 +8,7 @@ import Razorpay from "razorpay";
 import dotenv from "dotenv";
 dotenv.config();
 
+import bcrypt from "bcryptjs";
 import { sendEmail } from "../../helpers/resend.js";
 
 export const OrderService = {
@@ -61,8 +62,6 @@ export const OrderService = {
             totalCount
         };
     },
-
-
 
     async getOrder(search?: string, page?: number, limit?: number) {
         return OrderService.getAllOrders(search, page, limit);
@@ -138,37 +137,100 @@ export const OrderService = {
     },
 
     async placeOrder(input: any, context: any) {
-        if (!context || !context.user || !context.user.id) {
-            throw new Error("Unauthorized: Please login to place an order");
-        }
+        let userId;
 
-        const userId = context.user.id;
+        if (input.email) {
+            console.log("Guest checkout with email:", input.email);
+            let user = await userModel.findOne({ email: input.email });
+            if (!user) {
+                console.log("User not found, creating new user for:", input.email);
+                const nameParts = input.deliveryAddress?.name ? input.deliveryAddress.name.split(" ") : [];
+                const firstName = nameParts.length > 0 ? nameParts[0] : "";
+                const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+                
+                const randomPassword = Math.random().toString(36).slice(-8);
+                const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-        // Fetch active cart
-        const cart = await cartModel.findOne({ userId, status: "ACTIVE" });
-        if (!cart || !cart.products || cart.products.length === 0) {
-            throw new Error("Cart is empty");
+                const initialAddress: any = {
+                    firstName,
+                    lastName,
+                    address: input.deliveryAddress?.street || "",
+                    city: input.deliveryAddress?.city || "",
+                    state: input.deliveryAddress?.state || "",
+                    pincode: input.deliveryAddress?.pincode ? parseInt(input.deliveryAddress.pincode) : undefined,
+                    country: input.deliveryAddress?.country || "India",
+                    phone: input.deliveryAddress?.phone || "",
+                    isDefault: true
+                };
+
+                user = await userModel.create({
+                    username: input.deliveryAddress?.name || input.email.split('@')[0] + Math.floor(Math.random() * 1000),
+                    email: input.email,
+                    password: hashedPassword,
+                    phone_number: input.deliveryAddress?.phone || "",
+                    address: input.deliveryAddress?.street || "",
+                    city: input.deliveryAddress?.city || "",
+                    state: input.deliveryAddress?.state || "",
+                    country: input.deliveryAddress?.country || "India",
+                    pincode: input.deliveryAddress?.pincode ? parseInt(input.deliveryAddress.pincode) : 0,
+                    gender: "OTHER",
+                    addresses: [initialAddress]
+                });
+                console.log("New user created successfully with ID:", user._id);
+            } else {
+                console.log("Existing user found with ID:", user._id);
+            }
+            userId = user._id;
+        } else if (context && context.user && context.user.id) {
+            userId = context.user.id;
+        } else {
+            throw new Error("Unauthorized: Please login or provide an email to place an order");
         }
 
         let subTotal = 0;
         const items = [];
+        let cart = null;
 
-        for (const cartProduct of cart.products) {
-            const product = await productModel.findById(cartProduct.productId);
-            if (!product) {
-                throw new Error(`Product not found for id: ${cartProduct.productId}`);
+        if (input.guestCartItems && input.guestCartItems.length > 0) {
+            for (const item of input.guestCartItems) {
+                const product = await productModel.findById(item.productId);
+                if (!product) {
+                    throw new Error(`Product not found for id: ${item.productId}`);
+                }
+                subTotal += product.price * item.quantity;
+                items.push({
+                    productId: product._id,
+                    quantity: item.quantity,
+                    price: product.price,
+                    mrp: product.mrp,
+                    name: product.name,
+                    image: product.images?.[0] || "no-image-available",
+                    size: item.size || "Default"
+                });
+            }
+        } else {
+            cart = await cartModel.findOne({ userId, status: "ACTIVE" });
+            if (!cart || !cart.products || cart.products.length === 0) {
+                throw new Error("Cart is empty");
             }
 
-            subTotal += product.price * cartProduct.quantity;
-            items.push({
-                productId: product._id,
-                quantity: cartProduct.quantity,
-                price: product.price,
-                mrp: product.mrp,
-                name: product.name,
-                image: product.images?.[0] || "no-image-available",
-                size: cartProduct.size || "Default"
-            });
+            for (const cartProduct of cart.products) {
+                const product = await productModel.findById(cartProduct.productId);
+                if (!product) {
+                    throw new Error(`Product not found for id: ${cartProduct.productId}`);
+                }
+
+                subTotal += product.price * cartProduct.quantity;
+                items.push({
+                    productId: product._id,
+                    quantity: cartProduct.quantity,
+                    price: product.price,
+                    mrp: product.mrp,
+                    name: product.name,
+                    image: product.images?.[0] || "no-image-available",
+                    size: cartProduct.size || "Default"
+                });
+            }
         }
 
         let discountAmount = 0;
@@ -282,9 +344,11 @@ export const OrderService = {
             console.error("Failed to save delivery address to user profile", e);
         }
 
-        // Clear the cart
-        cart.status = "INACTIVE";
-        await cart.save();
+        // Clear the cart if it exists
+        if (cart) {
+            cart.status = "INACTIVE";
+            await cart.save();
+        }
 
         return {
             id: populatedOrder._id,
@@ -383,3 +447,6 @@ export const OrderService = {
         }
     }
 };
+
+
+
