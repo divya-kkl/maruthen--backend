@@ -19,6 +19,7 @@ export const OrderType = gql`
     state: String!
     country: String!
     phone: String!
+    pincode: String
   }
 
   type DeliveryPartner {
@@ -67,6 +68,7 @@ export const OrderType = gql`
     state: String!
     country: String!
     phone: String!
+    pincode: String
   }
 
   input DeliveryPartnerInput {
@@ -85,6 +87,8 @@ export const OrderType = gql`
     razorpayOrderId: String
     razorpayPaymentId: String
     razorpaySignature: String
+    email: String
+    guestCartItems: [OrderItemInput!]
   }
 
   type OrderResponse {
@@ -114,3 +118,5 @@ export const OrderType = gql`
     createRazorpayOrder(amount: Float!): RazorpayOrderResponse
   }
 `;
+
+
