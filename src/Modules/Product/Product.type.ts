@@ -34,6 +34,10 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    metalColor: String
+    weight: String
+    metalPurity: String
+    stoneType: String
     couponCode: String
     createdAt: String
     updatedAt: String
@@ -71,6 +75,10 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    metalColor: String
+    weight: String
+    metalPurity: String
+    stoneType: String
     couponCode: String
   }
 
@@ -98,6 +106,10 @@ export const ProductType = gql`
     lining: String
     washCare: String
     ironCare: String
+    metalColor: String
+    weight: String
+    metalPurity: String
+    stoneType: String
     couponCode: String
   }
 
@@ -169,6 +181,7 @@ export const ProductType = gql`
     getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
     getProductsByTagCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
     getCategoryFilters(code: String!): CategoryFilters
+    getTagFilters(code: String!): CategoryFilters
     getRelatedProducts(productId: ID!, limit: Int): [Product]!
     searchProducts(search: String, page: Int, limit: Int, filters: ProductFilterInput): ProductResponse
   }

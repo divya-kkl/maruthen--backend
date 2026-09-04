@@ -28,6 +28,10 @@ export interface IProduct extends Document {
     lining?: string;
     washCare?: string;
     ironCare?: string;
+    metalColor?: string;
+    weight?: string;
+    metalPurity?: string;
+    stoneType?: string;
     createdAt?: Date;
     updatedAt?: Date;
     couponCode?: string;
@@ -108,6 +112,10 @@ const ProductSchema: Schema = new Schema({
     lining: { type: String },
     washCare: { type: String },
     ironCare: { type: String },
+    metalColor: { type: String },
+    weight: { type: String },
+    metalPurity: { type: String },
+    stoneType: { type: String },
     couponCode: { type: String },
     rating: {
         type:Number,

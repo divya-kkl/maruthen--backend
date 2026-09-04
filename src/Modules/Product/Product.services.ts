@@ -48,6 +48,18 @@ export const ProductService = {
                     if (df.name === "Material" && df.values.length > 0) {
                         andConditions.push({ material: { $in: df.values } });
                     }
+                    if (df.name === "Metal Color" && df.values.length > 0) {
+                        andConditions.push({ metalColor: { $in: df.values } });
+                    }
+                    if (df.name === "Weight" && df.values.length > 0) {
+                        andConditions.push({ weight: { $in: df.values } });
+                    }
+                    if (df.name === "Metal Purity" && df.values.length > 0) {
+                        andConditions.push({ metalPurity: { $in: df.values } });
+                    }
+                    if (df.name === "Stone Type" && df.values.length > 0) {
+                        andConditions.push({ stoneType: { $in: df.values } });
+                    }
                 });
             }
 
@@ -95,6 +107,10 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            metalColor: (product as any).metalColor,
+            weight: (product as any).weight,
+            metalPurity: (product as any).metalPurity,
+            stoneType: (product as any).stoneType,
             couponCode: product.couponCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
@@ -171,6 +187,18 @@ export const ProductService = {
                     if (df.name === "Material" && df.values.length > 0) {
                         andConditions.push({ material: { $in: df.values } });
                     }
+                    if (df.name === "Metal Color" && df.values.length > 0) {
+                        andConditions.push({ metalColor: { $in: df.values } });
+                    }
+                    if (df.name === "Weight" && df.values.length > 0) {
+                        andConditions.push({ weight: { $in: df.values } });
+                    }
+                    if (df.name === "Metal Purity" && df.values.length > 0) {
+                        andConditions.push({ metalPurity: { $in: df.values } });
+                    }
+                    if (df.name === "Stone Type" && df.values.length > 0) {
+                        andConditions.push({ stoneType: { $in: df.values } });
+                    }
                 });
             }
 
@@ -218,6 +246,10 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            metalColor: product.metalColor,
+            weight: product.weight,
+            metalPurity: product.metalPurity,
+            stoneType: product.stoneType,
             couponCode: product.couponCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
@@ -318,6 +350,18 @@ export const ProductService = {
                         const regexes = df.values.map((v: string) => new RegExp(`^${v.trim()}$`, 'i'));
                         andConditions.push({ material: { $in: regexes } });
                     }
+                    if (df.name === "Metal Color" && df.values.length > 0) {
+                        andConditions.push({ metalColor: { $in: df.values } });
+                    }
+                    if (df.name === "Weight" && df.values.length > 0) {
+                        andConditions.push({ weight: { $in: df.values } });
+                    }
+                    if (df.name === "Metal Purity" && df.values.length > 0) {
+                        andConditions.push({ metalPurity: { $in: df.values } });
+                    }
+                    if (df.name === "Stone Type" && df.values.length > 0) {
+                        andConditions.push({ stoneType: { $in: df.values } });
+                    }
                 });
             }
 
@@ -397,6 +441,10 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            metalColor: product.metalColor,
+            weight: product.weight,
+            metalPurity: product.metalPurity,
+            stoneType: product.stoneType,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
             createdAt: product.createdAt?.toString(),
@@ -432,6 +480,10 @@ export const ProductService = {
         const colors: any = {};
         const brands: any = {};
         const materials: any = {};
+        const metalColors: any = {};
+        const weights: any = {};
+        const metalPurities: any = {};
+        const stoneTypes: any = {};
         let inStock = 0;
         let outOfStock = 0;
         let minPrice = Infinity;
@@ -454,6 +506,19 @@ export const ProductService = {
                 materials[normalizedMaterial] = (materials[normalizedMaterial] || 0) + 1;
             }
 
+            if ((p as any).metalColor) {
+                metalColors[(p as any).metalColor] = (metalColors[(p as any).metalColor] || 0) + 1;
+            }
+            if ((p as any).weight) {
+                weights[(p as any).weight] = (weights[(p as any).weight] || 0) + 1;
+            }
+            if ((p as any).metalPurity) {
+                metalPurities[(p as any).metalPurity] = (metalPurities[(p as any).metalPurity] || 0) + 1;
+            }
+            if ((p as any).stoneType) {
+                stoneTypes[(p as any).stoneType] = (stoneTypes[(p as any).stoneType] || 0) + 1;
+            }
+
             p.variants?.forEach(v => {
                 if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
                 if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
@@ -468,6 +533,30 @@ export const ProductService = {
             dynamicFilters.push({
                 name: "Material",
                 options: Object.entries(materials).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(metalColors).length > 0) {
+            dynamicFilters.push({
+                name: "Metal Color",
+                options: Object.entries(metalColors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(weights).length > 0) {
+            dynamicFilters.push({
+                name: "Weight",
+                options: Object.entries(weights).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(metalPurities).length > 0) {
+            dynamicFilters.push({
+                name: "Metal Purity",
+                options: Object.entries(metalPurities).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(stoneTypes).length > 0) {
+            dynamicFilters.push({
+                name: "Stone Type",
+                options: Object.entries(stoneTypes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
             });
         }
 
@@ -501,6 +590,10 @@ export const ProductService = {
         const colors: any = {};
         const brands: any = {};
         const materials: any = {};
+        const metalColors: any = {};
+        const weights: any = {};
+        const metalPurities: any = {};
+        const stoneTypes: any = {};
         let inStock = 0;
         let outOfStock = 0;
         let minPrice = Infinity;
@@ -523,6 +616,19 @@ export const ProductService = {
                 materials[normalizedMaterial] = (materials[normalizedMaterial] || 0) + 1;
             }
 
+            if ((p as any).metalColor) {
+                metalColors[(p as any).metalColor] = (metalColors[(p as any).metalColor] || 0) + 1;
+            }
+            if ((p as any).weight) {
+                weights[(p as any).weight] = (weights[(p as any).weight] || 0) + 1;
+            }
+            if ((p as any).metalPurity) {
+                metalPurities[(p as any).metalPurity] = (metalPurities[(p as any).metalPurity] || 0) + 1;
+            }
+            if ((p as any).stoneType) {
+                stoneTypes[(p as any).stoneType] = (stoneTypes[(p as any).stoneType] || 0) + 1;
+            }
+
             p.variants?.forEach(v => {
                 if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
                 if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
@@ -537,6 +643,30 @@ export const ProductService = {
             dynamicFilters.push({
                 name: "Material",
                 options: Object.entries(materials).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(metalColors).length > 0) {
+            dynamicFilters.push({
+                name: "Metal Color",
+                options: Object.entries(metalColors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(weights).length > 0) {
+            dynamicFilters.push({
+                name: "Weight",
+                options: Object.entries(weights).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(metalPurities).length > 0) {
+            dynamicFilters.push({
+                name: "Metal Purity",
+                options: Object.entries(metalPurities).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
+            });
+        }
+        if (Object.keys(stoneTypes).length > 0) {
+            dynamicFilters.push({
+                name: "Stone Type",
+                options: Object.entries(stoneTypes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count)
             });
         }
 
@@ -582,6 +712,10 @@ export const ProductService = {
             lining: product.lining,
             washCare: product.washCare,
             ironCare: product.ironCare,
+            metalColor: (product as any).metalColor,
+            weight: (product as any).weight,
+            metalPurity: (product as any).metalPurity,
+            stoneType: (product as any).stoneType,
             couponCode: product.couponCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
@@ -626,6 +760,10 @@ export const ProductService = {
             lining: newProduct.lining,
             washCare: newProduct.washCare,
             ironCare: newProduct.ironCare,
+            metalColor: (newProduct as any).metalColor,
+            weight: (newProduct as any).weight,
+            metalPurity: (newProduct as any).metalPurity,
+            stoneType: (newProduct as any).stoneType,
             couponCode: newProduct.couponCode,
             rating: newProduct.rating || 0,
             numReviews: newProduct.numReviews || 0,
@@ -732,6 +870,10 @@ export const ProductService = {
             lining: updatedProduct.lining,
             washCare: updatedProduct.washCare,
             ironCare: updatedProduct.ironCare,
+            metalColor: (updatedProduct as any).metalColor,
+            weight: (updatedProduct as any).weight,
+            metalPurity: (updatedProduct as any).metalPurity,
+            stoneType: (updatedProduct as any).stoneType,
             couponCode: updatedProduct.couponCode,
             rating: updatedProduct.rating || 0,
             numReviews: updatedProduct.numReviews || 0,
@@ -800,6 +942,18 @@ export const ProductService = {
                     if (df.name === "Material" && df.values.length > 0) {
                         andConditions.push({ material: { $in: df.values } });
                     }
+                    if (df.name === "Metal Color" && df.values.length > 0) {
+                        andConditions.push({ metalColor: { $in: df.values } });
+                    }
+                    if (df.name === "Weight" && df.values.length > 0) {
+                        andConditions.push({ weight: { $in: df.values } });
+                    }
+                    if (df.name === "Metal Purity" && df.values.length > 0) {
+                        andConditions.push({ metalPurity: { $in: df.values } });
+                    }
+                    if (df.name === "Stone Type" && df.values.length > 0) {
+                        andConditions.push({ stoneType: { $in: df.values } });
+                    }
                 });
             }
 
@@ -856,6 +1010,11 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            material: (product as any).material,
+            metalColor: (product as any).metalColor,
+            weight: (product as any).weight,
+            metalPurity: (product as any).metalPurity,
+            stoneType: (product as any).stoneType,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -930,6 +1089,10 @@ export const ProductService = {
             lining: p.lining,
             washCare: p.washCare,
             ironCare: p.ironCare,
+            metalColor: (p as any).metalColor,
+            weight: (p as any).weight,
+            metalPurity: (p as any).metalPurity,
+            stoneType: (p as any).stoneType,
             couponCode: p.couponCode,
             rating: p.rating || 0,
             numReviews: p.numReviews || 0,
