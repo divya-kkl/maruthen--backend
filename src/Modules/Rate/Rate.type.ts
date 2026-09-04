@@ -9,6 +9,11 @@ export const RateType = gql`
     amount: Float!
     type: String
     isCurrent: Boolean
+    mc: Float
+    mcType: String
+    hmc: Float
+    hmcType: String
+    gst: Float
     createdAt: String
     updatedAt: String
   }
@@ -20,6 +25,11 @@ export const RateType = gql`
     amount: Float!
     type: String
     isCurrent: Boolean
+    mc: Float
+    mcType: String
+    hmc: Float
+    hmcType: String
+    gst: Float
   }
 
   input UpdateRateInput {
@@ -29,6 +39,11 @@ export const RateType = gql`
     amount: Float
     type: String
     isCurrent: Boolean
+    mc: Float
+    mcType: String
+    hmc: Float
+    hmcType: String
+    gst: Float
   }
 
   extend type Query {
