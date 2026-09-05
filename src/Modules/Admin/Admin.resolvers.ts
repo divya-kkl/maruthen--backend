@@ -7,6 +7,9 @@ export const AdminResolver = {
         },
         getAllAdminUser: async (_: any, __: any, context: any) => {
             return AdminService.getAllAdminUser(context.user, __.search, __.page, __.limit);
+        },
+        getDashboardStats: async (_: any, __: any, context: any) => {
+            return AdminService.getDashboardStats();
         }
     },
     Mutation: {

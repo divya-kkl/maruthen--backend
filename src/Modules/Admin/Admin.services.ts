@@ -139,5 +139,33 @@ export const AdminService = {
             },
             jwtToken: token
         };
+    },
+
+    async getDashboardStats() {
+        const { productModel } = await import("../../DB/MongoDB/Product/Product.js");
+        const { OrderModel } = await import("../../DB/MongoDB/Order/Order.js");
+        const { userModel } = await import("../../DB/MongoDB/User/User.js");
+        const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
+        const { subCategoryModel } = await import("../../DB/MongoDB/SubCategories/SubCategories.js");
+        const { cartModel } = await import("../../DB/MongoDB/Cart/Cart.js");
+
+        const [totalOrders, totalUsers, totalProducts, totalCategories, totalSubCategories, totalCarts] =
+            await Promise.all([
+                OrderModel.countDocuments(),
+                userModel.countDocuments(),
+                productModel.countDocuments(),
+                productCategoryMOdel.countDocuments(),
+                subCategoryModel.countDocuments(),
+                cartModel.countDocuments()
+            ]);
+
+        return {
+            totalOrders,
+            totalUsers,
+            totalProducts,
+            totalCategories,
+            totalSubCategories,
+            totalCarts
+        };
     }
 };
