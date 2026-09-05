@@ -21,6 +21,9 @@ export const ProductResolver = {
         getCategoryFilters: async (_: any, __: any, context: any) => {
             return ProductService.getCategoryFilters(__.code);
         },
+        getTagFilters: async (_: any, __: any, context: any) => {
+            return ProductService.getTagFilters(__.code);
+        },
         getRelatedProducts: async (_: any, { productId, limit }:{ productId: string, limit?: number}) =>{
             return await ProductService.getRelatedProducts( productId, limit);
         },
