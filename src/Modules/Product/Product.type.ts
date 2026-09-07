@@ -35,6 +35,9 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    grossWeight: Float
+    netWeight: Float
+    purity: String
     createdAt: String
     updatedAt: String
     rating: Float
@@ -72,6 +75,9 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    grossWeight: Float
+    netWeight: Float
+    purity: String
   }
 
   input UpdateProductInput {
@@ -99,6 +105,9 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    grossWeight: Float
+    netWeight: Float
+    purity: String
   }
 
   type FilterOption {
@@ -182,4 +191,3 @@ export const ProductType = gql`
 
 
 `;
-// Trigger reload
