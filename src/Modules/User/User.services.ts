@@ -2,6 +2,7 @@ import { userModel } from "../../DB/MongoDB/User/User.js";
 import bcrypt from "bcryptjs";
 import { signToken } from "../../helpers/validation.js";
 import { SocketAddress } from "net";
+import { sendEmail } from "../../helpers/resend.js";
 
 export const UserService = {
 
@@ -212,5 +213,19 @@ export const UserService = {
             throw new Error("User not found");
         }
         return "User deleted successfully";
+    },
+
+    async sendEmailApi(to: string[], subject: string, html: string) {
+        try {
+            await sendEmail({
+                to,
+                subject,
+                html
+            });
+            return "Email sent successfully";
+        } catch (error: any) {
+            console.error("Failed to send email via API:", error);
+            throw new Error(error.message || "Failed to send email");
+        }
     }
 }

@@ -99,5 +99,6 @@ input UpdateUserInput {
     loginUser(input: LoginInput): RegisterResponse!
     updateUser(id: ID!, input: UpdateUserInput): User!
     deleteUser(id: ID!): String!
+    sendEmail(to: [String!]!, subject: String!, html: String!): String!
 }
 `
