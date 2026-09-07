@@ -78,8 +78,7 @@ input UpdateUserInput {
 }
   type RegisterResponse {
    user: User
-   token: String 
-   verificationToken: String
+   token: String
 }
    input LoginInput {
     email: String!

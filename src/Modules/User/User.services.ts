@@ -154,15 +154,13 @@ export const UserService = {
     async verifyEmail(token: string) {
 
         let decodedToken: any;
-         decodedToken = verifyToken(token);
-         console.log (decodedToken);
+        decodedToken = verifyToken(token);
+
         const user = await userModel.findById(decodedToken.id);
         if (!user) {
             throw new Error('Invalid or expired verification token.');
         }
         user.isEmailVerified = true;
-        // user.verificationToken = null;
-        // user.verificationTokenExpiry = null;
         await user.save();
         return true;
     },
