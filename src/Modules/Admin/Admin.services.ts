@@ -1,6 +1,9 @@
 import { adminModel } from "../../DB/MongoDB/Admin/Admin.js";
 import bcrypt from "bcryptjs";
 import { signToken } from "../../helpers/validation.js";
+import { productModel } from "../../DB/MongoDB/Product/Product.js";
+import { OrderModel } from "../../DB/MongoDB/Order/Order.js";
+import { userModel } from "../../DB/MongoDB/User/User.js";
 
 export const AdminService = {
     async getAllAdminUser(user: any, search?: string, page?: number, limit?: number) {
@@ -139,5 +142,22 @@ export const AdminService = {
             },
             jwtToken: token
         };
+    },
+
+    async getDashboardStats() {
+        try {
+            const totalProducts = await productModel.countDocuments();
+            const totalOrders = await OrderModel.countDocuments();
+            const totalUsers = await userModel.countDocuments();
+
+            return {
+                totalProducts,
+                totalOrders,
+                totalUsers
+            };
+        } catch (error) {
+            console.error("Failed to fetch dashboard stats", error);
+            throw new Error("Failed to fetch dashboard stats");
+        }
     }
 };
