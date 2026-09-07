@@ -647,10 +647,14 @@ export const ProductService = {
     },
 
     async updateProduct(id: string, input: any) {
-         if (input.mrp !== undefined) {
-            const discount = input.discountPercentage || 0;
-            if (input.price === undefined) {
-                input.price = input.mrp - (input.mrp * (discount / 100));
+         if (input.mrp !== undefined || input.discountPercentage !== undefined) {
+            const product = await productModel.findById(id);
+            if (product) {
+                const mrp = input.mrp !== undefined ? input.mrp : product.mrp;
+                const discount = input.discountPercentage !== undefined ? input.discountPercentage : product.discountPercentage;
+                if (input.price === undefined) {
+                    input.price = mrp - (mrp * (discount / 100));
+                }
             }
         }
         let updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
