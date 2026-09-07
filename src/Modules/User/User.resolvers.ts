@@ -26,5 +26,8 @@ export const UserResolver = {
         deleteUser: async (_: any, __: any, context: any) => {
             return UserService.deleteUser(__.id);
         },
+        sendEmail: async (_: any, __: any, context: any) => {
+            return UserService.sendEmailApi(__.to, __.subject, __.html);
+        },
     }
 };
