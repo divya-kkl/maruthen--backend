@@ -29,9 +29,16 @@ export const AdminType = gql`
     jwtToken: String
   }
 
+  type DashboardStats {
+    totalProducts: Int
+    totalOrders: Int
+    totalUsers: Int
+  }
+
   extend type Query {
     getAdminDetails: Admin
     getAllAdminUser(search: String, page: Int, limit: Int): [Admin]
+    getDashboardStats: DashboardStats
   }
 
   extend type Mutation {
