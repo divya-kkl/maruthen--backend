@@ -34,6 +34,7 @@ type User {
   pincode: Int
   gender: String
   addresses: [UserAddress]
+  isEmailVerified: Boolean
 }
   
 input RegisterInput {
@@ -77,7 +78,7 @@ input UpdateUserInput {
 }
   type RegisterResponse {
    user: User
-   token: String 
+   token: String
 }
    input LoginInput {
     email: String!
@@ -100,5 +101,6 @@ input UpdateUserInput {
     updateUser(id: ID!, input: UpdateUserInput): User!
     deleteUser(id: ID!): String!
     sendEmail(to: [String!]!, subject: String!, html: String!): String!
+    verifyEmail(token: String!): Boolean!
 }
 `

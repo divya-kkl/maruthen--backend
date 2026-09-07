@@ -29,5 +29,8 @@ export const UserResolver = {
         sendEmail: async (_: any, __: any, context: any) => {
             return UserService.sendEmailApi(__.to, __.subject, __.html);
         },
+        verifyEmail: async (_: any, __: any, context: any) => {
+            return UserService.verifyEmail(__.token);
+        },
     }
 };
