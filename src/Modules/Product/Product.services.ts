@@ -603,8 +603,12 @@ export const ProductService = {
     },
 
     async createProduct(input: any) {
-        input.price = 0;
-        input.mrp = 0;
+       if (input.mrp !== undefined) {
+            const discount = input.discountPercentage || 0;
+            if (input.price === undefined) {
+                input.price = input.mrp - (input.mrp * (discount / 100));
+            }
+        }
         let newProduct = await productModel.create(input);
         newProduct = await newProduct.populate([{ path: "productCategoriesID" }, { path: "productSubCategoriesID" }, { path: "tags" }]);
         return {
@@ -643,8 +647,12 @@ export const ProductService = {
     },
 
     async updateProduct(id: string, input: any) {
-        input.price = 0;
-        input.mrp = 0;
+         if (input.mrp !== undefined) {
+            const discount = input.discountPercentage || 0;
+            if (input.price === undefined) {
+                input.price = input.mrp - (input.mrp * (discount / 100));
+            }
+        }
         let updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedProduct) {
             throw new Error("Product not found");
