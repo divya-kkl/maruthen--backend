@@ -1,4 +1,4 @@
-import { productModel } from "../../DB/MongoDB/Product/Product.js";
+﻿import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 export const ProductService = {
     async getAllProducts(search?: string, page?: number, limit?: number, filters?: any) {
@@ -87,6 +87,9 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
             material: product.material,
             embellishment: product.embellishment,
             neck: product.neck,
@@ -210,6 +213,9 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
             material: product.material,
             embellishment: product.embellishment,
             neck: product.neck,
@@ -389,6 +395,9 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
             material: product.material,
             embellishment: product.embellishment,
             neck: product.neck,
@@ -574,6 +583,9 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
             material: product.material,
             embellishment: product.embellishment,
             neck: product.neck,
@@ -591,7 +603,7 @@ export const ProductService = {
     },
 
     async createProduct(input: any) {
-        if (input.mrp !== undefined) {
+       if (input.mrp !== undefined) {
             const discount = input.discountPercentage || 0;
             if (input.price === undefined) {
                 input.price = input.mrp - (input.mrp * (discount / 100));
@@ -635,7 +647,7 @@ export const ProductService = {
     },
 
     async updateProduct(id: string, input: any) {
-        if (input.mrp !== undefined || input.discountPercentage !== undefined) {
+         if (input.mrp !== undefined || input.discountPercentage !== undefined) {
             const product = await productModel.findById(id);
             if (product) {
                 const mrp = input.mrp !== undefined ? input.mrp : product.mrp;
@@ -856,6 +868,9 @@ export const ProductService = {
             tags: product.tags,
             variants: product.variants,
             description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
