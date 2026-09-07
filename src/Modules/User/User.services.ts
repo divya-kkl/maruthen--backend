@@ -1,7 +1,7 @@
 import { userModel } from "../../DB/MongoDB/User/User.js";
 import bcrypt from "bcryptjs";
-import { signToken } from "../../helpers/validation.js";
-import { SocketAddress } from "net";
+import { signToken, verifyToken } from "../../helpers/validation.js";
+
 import { sendEmail } from "../../helpers/resend.js";
 
 export const UserService = {
@@ -17,14 +17,14 @@ export const UserService = {
                 ]
             };
         }
-        
+
         let totalCount = await userModel.countDocuments(filter);
         let query = userModel.find(filter).sort({ createdTime: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
         }
-        
+
         const users = await query;
         const mappedUsers = users.map((item) => ({
             id: item._id,
@@ -124,9 +124,11 @@ export const UserService = {
             gender,
             addresses: hasAddressInfo ? [initialAddress] : [],
             createdTime: new Date().toString(),
+            isEmailVerified: false,
+
         });
 
-        const token = signToken({ id: newUser._id, email: newUser.email });
+        const token = signToken({ id: newUser._id, email: newUser.email, expiresIn: "15m" });
 
         return {
             user: {
@@ -142,9 +144,27 @@ export const UserService = {
                 gender: newUser.gender,
                 addresses: newUser.addresses,
                 createdTime: newUser.createdTime?.toString(),
+                isEmailVerified: newUser.isEmailVerified,
             },
             token,
+
         };
+    },
+
+    async verifyEmail(token: string) {
+
+        let decodedToken: any;
+         decodedToken = verifyToken(token);
+         console.log (decodedToken);
+        const user = await userModel.findById(decodedToken.id);
+        if (!user) {
+            throw new Error('Invalid or expired verification token.');
+        }
+        user.isEmailVerified = true;
+        // user.verificationToken = null;
+        // user.verificationTokenExpiry = null;
+        await user.save();
+        return true;
     },
 
     async loginUser(input: any = {}) {
@@ -154,7 +174,11 @@ export const UserService = {
             throw new Error("Email and password are required");
         }
 
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email, isEmailVerified: true });
+
+        if (!user?.isEmailVerified) {
+            throw new Error("Email not verified");
+        }
 
         if (!user || !user.password) {
             throw new Error("Invalid email or password");

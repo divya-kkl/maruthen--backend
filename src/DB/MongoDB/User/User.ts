@@ -26,6 +26,9 @@ export interface IUser extends Document {
     addresses?: IAddress[],
     createdTime: Date;
     gender: string;
+    isEmailVerified?: boolean;
+    // verificationToken?: string | null;
+    // verificationTokenExpiry?: Date | null;
 }
 
 const AddressSchema = new Schema<IAddress>({
@@ -83,7 +86,10 @@ const UserSchema = new Schema<IUser>({
     createdTime: {
         type: Date,
         default: Date.now()
-    }
+    },
+    isEmailVerified: { type: Boolean, default: false }
+//     verificationToken: { type: String, default: null },
+//     verificationTokenExpiry: { type: Date, default: null }
 }
 );
 
