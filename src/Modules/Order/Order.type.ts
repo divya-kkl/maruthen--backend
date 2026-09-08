@@ -36,6 +36,9 @@ export const OrderType = gql`
     subTotal: Float!
     deliveryCharge: Float!
     totalAmount: Float!
+    mc: Float
+    hmc: Float
+    gst: Float
     status: String!
     paymentStatus: String!
     paymentMethod: String!
@@ -89,6 +92,9 @@ export const OrderType = gql`
     razorpaySignature: String
     email: String
     guestCartItems: [OrderItemInput!]
+    mc: Float
+    hmc: Float
+    gst: Float
   }
 
   type OrderResponse {
