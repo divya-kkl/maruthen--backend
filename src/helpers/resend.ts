@@ -1,4 +1,5 @@
 export async function sendEmail({
+  
   to,
   subject,
   html,
@@ -14,7 +15,7 @@ export async function sendEmail({
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "sankar@godjewellery.com",
+      from:  "God Jewellery <sankar@godjewellery.com>",
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
