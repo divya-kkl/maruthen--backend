@@ -44,6 +44,9 @@ export const OrderService = {
                 subTotal: item.subTotal,
                 deliveryCharge: item.deliveryCharge,
                 totalAmount: item.totalAmount,
+                mc: item.mc,
+                hmc: item.hmc,
+                gst: item.gst,
                 status: item.status,
                 paymentStatus: item.paymentStatus,
                 paymentMethod: item.paymentMethod,
@@ -122,6 +125,9 @@ export const OrderService = {
             subTotal: item.subTotal,
             deliveryCharge: item.deliveryCharge,
             totalAmount: item.totalAmount,
+            mc: item.mc,
+            hmc: item.hmc,
+            gst: item.gst,
             status: item.status,
             paymentStatus: item.paymentStatus,
             paymentMethod: item.paymentMethod,
@@ -281,7 +287,10 @@ export const OrderService = {
             orderNumber,
             paymentStatus,
             couponCode: isCouponApplied ? input.couponCode : undefined,
-            isCouponApplied
+            isCouponApplied,
+            mc: input.mc,
+            hmc: input.hmc ,
+            gst: input.gst 
         };
 
         const newOrder: any = await OrderModel.create(orderData);
@@ -323,15 +332,645 @@ export const OrderService = {
                             to: user.email,
                             subject: `Order Confirmation - ${orderNumber}`,
                             html: `
-                                <div style="font-family: Arial, sans-serif; padding: 20px;">
-                                    <h2 style="color: #4CAF50;">Order Confirmed!</h2>
-                                    <p>Hi ${user.username || 'Customer'},</p>
-                                    <p>Thank you for shopping with us. Your order <strong>${orderNumber}</strong> has been placed successfully.</p>
-                                    <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
-                                    <p><strong>Payment Method:</strong> ${input.paymentMethod}</p>
-                                    <br/>
-                                    <p>We will notify you once your order is shipped!</p>
-                                </div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+</head>
+
+<body style="
+  margin:0;
+  padding:0;
+  background:#f5f7fa;
+  font-family:Arial, Helvetica, sans-serif;
+">
+
+  <!-- Main Background -->
+  <table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    style="
+      width:100%;
+      background:#f5f7fa;
+      padding:30px 0;
+    "
+  >
+    <tr>
+      <td align="center">
+
+        <!-- Main Container -->
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          style="
+            width:100%;
+            max-width:600px;
+            background:#ffffff;
+            border-radius:12px;
+            overflow:hidden;
+          "
+        >
+
+          <!-- ================= HEADER ================= -->
+
+          <tr>
+            <td
+              align="center"
+              style="
+                background:#111827;
+                padding:25px 30px;
+              "
+            >
+
+              <h1 style="
+                margin:0;
+                color:#ffffff;
+                font-size:26px;
+                line-height:1.3;
+              ">
+                Your Order is Confirmed! 🎉
+              </h1>
+
+              <p style="
+                margin:8px 0 0;
+                color:#d1d5db;
+                font-size:14px;
+                line-height:1.5;
+              ">
+                Thank you for shopping with us.
+              </p>
+
+            </td>
+          </tr>
+
+
+          <!-- ================= CONTENT ================= -->
+
+          <tr>
+            <td
+              style="
+                padding:30px;
+                text-align:left;
+              "
+            >
+
+              <!-- Greeting -->
+
+              <p style="
+                margin:0 0 8px;
+                color:#111827;
+                font-size:16px;
+                line-height:1.5;
+              ">
+                Hi
+                <strong>
+                  ${user.username || input.deliveryAddress?.name || 'Customer'}
+                </strong>,
+              </p>
+
+
+              <!-- Description -->
+
+              <p style="
+                margin:0 0 25px;
+                color:#6b7280;
+                font-size:14px;
+                line-height:1.6;
+              ">
+                Your order has been successfully placed.
+                Here are your order details:
+              </p>
+
+
+              <!-- ================= ORDER INFO ================= -->
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  width:100%;
+                  background:#f9fafb;
+                  border-radius:8px;
+                "
+              >
+
+                <tr>
+
+                  <!-- Order ID -->
+
+                  <td
+                    width="50%"
+                    valign="top"
+                    style="
+                      padding:15px;
+                    "
+                  >
+
+                    <strong style="
+                      display:block;
+                      margin-bottom:4px;
+                      color:#111827;
+                      font-size:14px;
+                    ">
+                      Order ID
+                    </strong>
+
+                    <span style="
+                      color:#6b7280;
+                      font-size:14px;
+                    ">
+                      #${orderNumber}
+                    </span>
+
+                  </td>
+
+
+                  <!-- Order Date -->
+
+                  <td
+                    width="50%"
+                    align="right"
+                    valign="top"
+                    style="
+                      padding:15px;
+                    "
+                  >
+
+                    <strong style="
+                      display:block;
+                      margin-bottom:4px;
+                      color:#111827;
+                      font-size:14px;
+                    ">
+                      Order Date
+                    </strong>
+
+                    <span style="
+                      color:#6b7280;
+                      font-size:14px;
+                    ">
+                      ${new Date().toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </span>
+
+                  </td>
+
+                </tr>
+
+              </table>
+
+
+              <!-- ================= ORDER SUMMARY ================= -->
+
+              <h3 style="
+                margin:30px 0 15px;
+                color:#111827;
+                font-size:18px;
+                line-height:1.4;
+              ">
+                Order Summary
+              </h3>
+
+
+              <!-- Product Table -->
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  width:100%;
+                  border-collapse:collapse;
+                "
+              >
+
+                <!-- Products -->
+
+                ${items
+                  .map(
+                    (item: any) => `
+                    <tr>
+
+                      <!-- Product Name -->
+
+                      <td
+                        width="70%"
+                        valign="top"
+                        style="
+                          padding:15px 0;
+                          border-bottom:1px solid #e5e7eb;
+                        "
+                      >
+
+                        <strong style="
+                          color:#111827;
+                          font-size:15px;
+                          line-height:1.5;
+                        ">
+                          ${item.name}
+                        </strong>
+
+                        <br>
+
+                        <span style="
+                          color:#6b7280;
+                          font-size:13px;
+                          line-height:1.5;
+                        ">
+                          Quantity: ${item.quantity}
+                          ${item.size ? ` | Size: ${item.size}` : ''}
+                        </span>
+
+                      </td>
+
+
+                      <!-- Product Price -->
+
+                      <td
+                        width="30%"
+                        align="right"
+                        valign="top"
+                        style="
+                          padding:15px 0;
+                          border-bottom:1px solid #e5e7eb;
+                        "
+                      >
+
+                        <strong style="
+                          color:#111827;
+                          font-size:14px;
+                        ">
+                          ₹${item.price * item.quantity}
+                        </strong>
+
+                      </td>
+
+                    </tr>
+                  `
+                  )
+                  .join('')}
+
+
+                <!-- ================= SUBTOTAL ================= -->
+
+                <tr>
+
+                  <td style="
+                    padding:12px 0;
+                    color:#6b7280;
+                    font-size:14px;
+                  ">
+                    Subtotal
+                  </td>
+
+                  <td
+                    align="right"
+                    style="
+                      padding:12px 0;
+                      color:#111827;
+                      font-size:14px;
+                    "
+                  >
+                    ₹${subTotal}
+                  </td>
+
+                </tr>
+
+
+                <!-- ================= MAKING CHARGES ================= -->
+
+                ${
+                  input.mc
+                    ? `
+                    <tr>
+
+                      <td style="
+                        padding:12px 0;
+                        color:#6b7280;
+                        font-size:14px;
+                      ">
+                        Making Charges (MC)
+                      </td>
+
+                      <td
+                        align="right"
+                        style="
+                          padding:12px 0;
+                          color:#111827;
+                          font-size:14px;
+                        "
+                      >
+                        ₹${input.mc}
+                      </td>
+
+                    </tr>
+                    `
+                    : ''
+                }
+
+
+                <!-- ================= HALLMARK CHARGES ================= -->
+
+                ${
+                  input.hmc
+                    ? `
+                    <tr>
+
+                      <td style="
+                        padding:12px 0;
+                        color:#6b7280;
+                        font-size:14px;
+                      ">
+                        Hallmark Charges (HMC)
+                      </td>
+
+                      <td
+                        align="right"
+                        style="
+                          padding:12px 0;
+                          color:#111827;
+                          font-size:14px;
+                        "
+                      >
+                        ₹${input.hmc}
+                      </td>
+
+                    </tr>
+                    `
+                    : ''
+                }
+
+
+                <!-- ================= GST ================= -->
+
+                ${
+                  input.gst
+                    ? `
+                    <tr>
+
+                      <td style="
+                        padding:12px 0;
+                        color:#6b7280;
+                        font-size:14px;
+                      ">
+                        GST
+                      </td>
+
+                      <td
+                        align="right"
+                        style="
+                          padding:12px 0;
+                          color:#111827;
+                          font-size:14px;
+                        "
+                      >
+                        ₹${input.gst}
+                      </td>
+
+                    </tr>
+                    `
+                    : ''
+                }
+
+
+                <!-- ================= DISCOUNT ================= -->
+
+                ${
+                  discountAmount > 0
+                    ? `
+                    <tr>
+
+                      <td style="
+                        padding:12px 0;
+                        color:#6b7280;
+                        font-size:14px;
+                      ">
+                        Discount
+                        ${
+                          input.couponCode
+                            ? `(${input.couponCode})`
+                            : ''
+                        }
+                      </td>
+
+                      <td
+                        align="right"
+                        style="
+                          padding:12px 0;
+                          color:#16a34a;
+                          font-size:14px;
+                        "
+                      >
+                        - ₹${discountAmount}
+                      </td>
+
+                    </tr>
+                    `
+                    : ''
+                }
+
+
+                <!-- ================= SHIPPING ================= -->
+
+                <tr>
+
+                  <td style="
+                    padding:12px 0;
+                    color:#6b7280;
+                    font-size:14px;
+                    border-bottom:1px solid #e5e7eb;
+                  ">
+                    Shipping
+                  </td>
+
+                  <td
+                    align="right"
+                    style="
+                      padding:12px 0;
+                      color:#111827;
+                      font-size:14px;
+                      border-bottom:1px solid #e5e7eb;
+                    "
+                  >
+
+                    ${
+                      input.deliveryCharge
+                        ? `₹${input.deliveryCharge}`
+                        : 'Free'
+                    }
+
+                  </td>
+
+                </tr>
+
+
+                <!-- ================= TOTAL ================= -->
+
+                <tr>
+
+                  <td style="
+                    padding:18px 0;
+                    color:#111827;
+                    font-size:17px;
+                  ">
+                    <strong>
+                      Total Amount
+                    </strong>
+                  </td>
+
+                  <td
+                    align="right"
+                    style="
+                      padding:18px 0;
+                      color:#111827;
+                      font-size:20px;
+                    "
+                  >
+                    <strong>
+                      ₹${totalAmount}
+                    </strong>
+                  </td>
+
+                </tr>
+
+              </table>
+
+
+              <!-- ================= SHIPPING ADDRESS ================= -->
+
+              <h3 style="
+                margin:30px 0 12px;
+                color:#111827;
+                font-size:18px;
+                line-height:1.4;
+              ">
+                Shipping Address
+              </h3>
+
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  width:100%;
+                  background:#f9fafb;
+                  border-radius:8px;
+                "
+              >
+
+                <tr>
+
+                  <td style="
+                    padding:15px;
+                    color:#6b7280;
+                    font-size:14px;
+                    line-height:1.6;
+                  ">
+
+                    <strong style="
+                      color:#111827;
+                      font-size:14px;
+                    ">
+                      ${input.deliveryAddress?.name || ''}
+                    </strong>
+
+                    <br>
+
+                    ${input.deliveryAddress?.street || ''}
+
+                    <br>
+
+                    ${input.deliveryAddress?.city || ''},
+                    ${input.deliveryAddress?.state || ''}
+                    -
+                    ${input.deliveryAddress?.pincode || ''}
+
+                    <br>
+
+                    ${input.deliveryAddress?.country || 'India'}
+
+                    <br>
+
+                    Phone:
+                    ${input.deliveryAddress?.phone || ''}
+
+                  </td>
+
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+
+          <!-- ================= FOOTER ================= -->
+
+          <tr>
+
+            <td
+              align="center"
+              style="
+                background:#f9fafb;
+                padding:25px 30px;
+              "
+            >
+
+              <p style="
+                margin:0 0 8px;
+                color:#111827;
+                font-size:14px;
+                line-height:1.5;
+              ">
+                Thank you for choosing us! ❤️
+              </p>
+
+
+              <p style="
+                margin:0;
+                color:#9ca3af;
+                font-size:12px;
+                line-height:1.6;
+              ">
+
+                If you have any questions,
+                please contact our support team.
+
+                <br>
+
+                © 2026 Your Store.
+                All rights reserved.
+
+              </p>
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+
                             `
                         });
                         console.log("Order confirmation email sent to:", user.email);
@@ -359,6 +998,9 @@ export const OrderService = {
             subTotal: populatedOrder.subTotal,
             deliveryCharge: populatedOrder.deliveryCharge,
             totalAmount: populatedOrder.totalAmount,
+            mc: populatedOrder.mc,
+            hmc: populatedOrder.hmc,
+            gst: populatedOrder.gst,
             status: populatedOrder.status,
             paymentStatus: populatedOrder.paymentStatus,
             paymentMethod: populatedOrder.paymentMethod,
@@ -406,6 +1048,9 @@ export const OrderService = {
             subTotal: item.subTotal,
             deliveryCharge: item.deliveryCharge,
             totalAmount: item.totalAmount,
+            mc: item.mc,
+            hmc: item.hmc,
+            gst: item.gst,
             status: item.status,
             paymentStatus: item.paymentStatus,
             paymentMethod: item.paymentMethod,

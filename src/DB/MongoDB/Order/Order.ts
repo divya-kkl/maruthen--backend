@@ -33,6 +33,9 @@ export interface IOrder extends Document {
     subTotal?: number;
     deliveryCharge: number;
     totalAmount?: number;
+    mc?: number;
+    hmc?: number;
+    gst?: number;
     status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
     paymentMethod: string;
@@ -189,6 +192,15 @@ const OrderSchema = new Schema<IOrder>({
     },
     razorpaySignature: {
         type: String
+    },
+    mc: {
+        type: Number
+    },
+    hmc: {
+        type: Number
+    },
+    gst: {
+        type: Number
     }
 }, {
     timestamps: true
