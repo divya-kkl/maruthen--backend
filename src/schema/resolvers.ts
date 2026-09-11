@@ -19,6 +19,8 @@ import { TagResolver } from "../Modules/Tag/Tag.resolvers.js";
 import { WishlistResolver } from "../Modules/Wishlist/Wishlist.resolvers.js";
 import { RateResolver } from "../Modules/Rate/Rate.resolvers.js";
 import { ForgotPasswordResolver } from "../Modules/ForgetPassword/ForgotPassword.resolvers.js";
+import { VideoResolver } from "../Modules/video/video.resolvers.js";
+import { ImageResolver } from "../Modules/image/image.resolvers.js";
 
 const resolversArray = [
     UserResolver,
@@ -39,7 +41,9 @@ const resolversArray = [
     TagResolver,
     WishlistResolver,
     RateResolver,
-    ForgotPasswordResolver
+    ForgotPasswordResolver,
+    VideoResolver,
+    ImageResolver
 ];
 
 

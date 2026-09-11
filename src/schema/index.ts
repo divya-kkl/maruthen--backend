@@ -17,6 +17,8 @@ import { TagType } from "../Modules/Tag/Tag.type.js";
 import { WishlistType } from "../Modules/Wishlist/Wishlist.type.js";
 import { RateType } from "../Modules/Rate/Rate.type.js";
 import { ForgotPasswordType } from "../Modules/ForgetPassword/ForgotPassword.type.js";
+import { VideoType } from "../Modules/video/video.type.js";
+import { ImageType } from "../Modules/image/image.type.js";
 
 export const typeDefs = [
     UserType,
@@ -37,6 +39,7 @@ export const typeDefs = [
     TagType,
     WishlistType,
     RateType,
-    ForgotPasswordType
+    ForgotPasswordType,
+    VideoType,
+    ImageType
 ];
-
