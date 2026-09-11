@@ -209,6 +209,12 @@ export const UserService = {
     },
 
     async updateUser(id: string, input: any) {
+
+        if (input.password) {
+            const salt = await bcrypt.genSalt(10);
+            input.password = await bcrypt.hash(input.password, salt);
+        }
+
         const updatedUser = await userModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedUser) {
             throw new Error("User not found");
@@ -217,6 +223,7 @@ export const UserService = {
             id: updatedUser._id,
             username: updatedUser.username,
             email: updatedUser.email,
+            password: updatedUser.password,
             country: updatedUser.country,
             state: updatedUser.state,
             city: updatedUser.city,

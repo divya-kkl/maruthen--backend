@@ -67,6 +67,7 @@ input UserAddressInput {
 input UpdateUserInput {
   username: String
   email: String
+  password: String
   country: String
   state: String
   city: String
