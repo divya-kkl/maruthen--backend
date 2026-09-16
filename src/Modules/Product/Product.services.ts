@@ -265,7 +265,16 @@ export const ProductService = {
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
 
         if (!category) {
-            return [];
+            return {
+                products: [],
+                filters: {
+                    sizes: [], colors: [], brands: [],
+                    stock: { inStock: 0, outOfStock: 0 },
+                    price: { min: 0, max: 0 },
+                    dynamicFilters: []
+                },
+                totalCount: 0
+            };
         }
 
         let filter: any = {
@@ -275,7 +284,7 @@ export const ProductService = {
             ]
         };
 
-        if (search) {
+        if (search && search !== 'null' && search !== 'undefined') {
             const regex = new RegExp(search, 'i');
             filter = {
                 $and: [
@@ -423,6 +432,179 @@ export const ProductService = {
         };
     },
 
+
+    async getProductsBySubCategoryCode(code: string, search?: string, page?: number, limit?: number, sort?: string, filters?: any) {
+        const { subCategoryModel } = await import("../../DB/MongoDB/SubCategories/SubCategories.js");
+        const subcategory = await subCategoryModel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
+
+        if (!subcategory) {
+            return {
+                products: [],
+                filters: {
+                    sizes: [], colors: [], brands: [],
+                    stock: { inStock: 0, outOfStock: 0 },
+                    price: { min: 0, max: 0 },
+                    dynamicFilters: []
+                },
+                totalCount: 0
+            };
+        }
+
+        let filter: any = {
+            $or: [
+                { productSubCategoriesID: subcategory._id },
+                { productSubCategoriesCode: { $regex: new RegExp(`^${code}$`, 'i') } }
+            ]
+        };
+
+
+        if (search && search !== 'null' && search !== 'undefined') {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $and: [
+                    filter,
+                    {
+                        $or: [
+                            { name: { $regex: regex } },
+                            { brand: { $regex: regex } }
+                        ]
+                    }
+                ]
+            };
+        }
+
+        if (filters) {
+            const andConditions: any[] = [];
+
+            if (filters.sizes && filters.sizes.length > 0) {
+                andConditions.push({ "variants.size": { $in: filters.sizes } });
+            }
+            if (filters.colors && filters.colors.length > 0) {
+                andConditions.push({ "variants.color": { $in: filters.colors } });
+            }
+            if (filters.brands && filters.brands.length > 0) {
+                andConditions.push({ brand: { $in: filters.brands } });
+            }
+            if (filters.stock && filters.stock.length > 0) {
+                const stockConditions = [];
+                if (filters.stock.includes("In stock")) {
+                    stockConditions.push({ "variants.stock": { $gt: 0 } });
+                }
+                if (filters.stock.includes("Out of stock")) {
+                    stockConditions.push({ "variants.stock": { $lte: 0 } }); // or no stock
+                }
+                if (stockConditions.length > 0) {
+                    andConditions.push({ $or: stockConditions });
+                }
+            }
+            if (filters.price && (filters.price.min > 0 || filters.price.max > 0)) {
+                const priceQuery: any = {};
+                if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
+                if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
+                andConditions.push({ price: priceQuery });
+            }
+            if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
+                filters.dynamicFilters.forEach((df: any) => {
+                    if (df.name === "Material" && df.values.length > 0) {
+                        const regexes = df.values.map((v: string) => new RegExp(`^${v.trim()}$`, 'i'));
+                        andConditions.push({ material: { $in: regexes } });
+                    }
+                });
+            }
+
+            if (andConditions.length > 0) {
+                if (filter.$and) {
+                    filter.$and.push(...andConditions);
+                } else {
+                    filter.$and = andConditions;
+                }
+            }
+        }
+
+        let sortOption: any = { updatedAt: -1, createdAt: -1 };
+        let useCollation = false;
+        if (sort) {
+            switch (sort) {
+                case 'price-low':
+                    sortOption = { price: 1 };
+                    break;
+                case 'price-high':
+                    sortOption = { price: -1 };
+                    break;
+                case 'atoz':
+                    sortOption = { name: 1 };
+                    useCollation = true;
+                    break;
+                case 'ztoa':
+                    sortOption = { name: -1 };
+                    useCollation = true;
+                    break;
+                case 'features':
+                    sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 };
+                    break;
+                case 'bestselling':
+                case 'most-relevant':
+                default:
+                    sortOption = { updatedAt: -1, createdAt: -1 };
+                    break;
+            }
+        }
+
+        const totalCount = await productModel.countDocuments(filter);
+
+        let query = productModel.find(filter).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags").sort(sortOption);
+        if (useCollation) {
+            query = query.collation({ locale: 'en', strength: 2 });
+        }
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const products = await query;
+        const mappedProducts = products.map((product) => ({
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            hasSize: product.hasSize,
+            isFeatured: product.isFeatured,
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
+            tags: product.tags,
+            variants: product.variants,
+            description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
+            material: product.material,
+            embellishment: product.embellishment,
+            neck: product.neck,
+            sleeves: product.sleeves,
+            closure: product.closure,
+            lining: product.lining,
+            washCare: product.washCare,
+            ironCare: product.ironCare,
+            rating: product.rating || 0,
+            numReviews: product.numReviews || 0,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
+        }));
+
+        const categoryFilters = await ProductService.getCategoryFilters(code);
+
+        return {
+            products: mappedProducts,
+            filters: categoryFilters,
+            totalCount
+        };
+    },
     async getCategoryFilters(code: string) {
         const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
@@ -606,7 +788,7 @@ export const ProductService = {
     },
 
     async createProduct(input: any) {
-       if (input.mrp !== undefined) {
+        if (input.mrp !== undefined) {
             const discount = input.discountPercentage || 0;
             if (input.price === undefined) {
                 input.price = input.mrp - (input.mrp * (discount / 100));
@@ -651,7 +833,7 @@ export const ProductService = {
     },
 
     async updateProduct(id: string, input: any) {
-         if (input.mrp !== undefined || input.discountPercentage !== undefined) {
+        if (input.mrp !== undefined || input.discountPercentage !== undefined) {
             const product = await productModel.findById(id);
             if (product) {
                 const mrp = input.mrp !== undefined ? input.mrp : product.mrp;
@@ -901,8 +1083,8 @@ export const ProductService = {
     },
 
     async getRelatedProducts(productId: string, limit: number = 4) {
-        
-        
+
+
         const currentProduct = await productModel.findById(productId);
         if (!currentProduct) {
             throw new Error("Product not found");

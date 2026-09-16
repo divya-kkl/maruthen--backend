@@ -10,6 +10,9 @@ export const CartType = gql`
     mrp: Float!
     totalPrice: Float!
     size: String!
+    grossWeight: Float
+    netWeight: Float
+    purity: String
   }
 
   type Cart {
