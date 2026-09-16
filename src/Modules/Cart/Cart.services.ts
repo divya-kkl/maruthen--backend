@@ -18,7 +18,10 @@ const populateCartItems = async (items: any[]) => {
                 price: product.price,
                 mrp: product.mrp,
                 totalPrice: totalPrice,
-                size: item.size || "Default"
+                size: item.size || "Default",
+                grossWeight: product.grossWeight,
+                netWeight: product.netWeight,
+                purity: product.purity
             });
             totalQuantity += item.quantity;
             subTotal += totalPrice;
