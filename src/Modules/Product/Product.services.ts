@@ -1,4 +1,4 @@
-﻿import { productModel } from "../../DB/MongoDB/Product/Product.js";
+import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 export const ProductService = {
     async getAllProducts(search?: string, page?: number, limit?: number, filters?: any) {
@@ -99,6 +99,7 @@ export const ProductService = {
             washCare: product.washCare,
             ironCare: product.ironCare,
             couponCode: product.couponCode,
+            productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
             createdAt: product.createdAt?.toString(),
@@ -225,6 +226,7 @@ export const ProductService = {
             washCare: product.washCare,
             ironCare: product.ironCare,
             couponCode: product.couponCode,
+            productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
             createdAt: product.createdAt?.toString(),
@@ -595,6 +597,7 @@ export const ProductService = {
             washCare: product.washCare,
             ironCare: product.ironCare,
             couponCode: product.couponCode,
+            productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
             createdAt: product.createdAt?.toString(),
@@ -639,6 +642,7 @@ export const ProductService = {
             washCare: newProduct.washCare,
             ironCare: newProduct.ironCare,
             couponCode: newProduct.couponCode,
+            productCode: newProduct.productCode,
             rating: newProduct.rating || 0,
             numReviews: newProduct.numReviews || 0,
             createdAt: newProduct.createdAt?.toString(),
@@ -690,6 +694,7 @@ export const ProductService = {
             washCare: updatedProduct.washCare,
             ironCare: updatedProduct.ironCare,
             couponCode: updatedProduct.couponCode,
+            productCode: updatedProduct.productCode,
             rating: updatedProduct.rating || 0,
             numReviews: updatedProduct.numReviews || 0,
             createdAt: updatedProduct.createdAt?.toString(),
@@ -745,6 +750,7 @@ export const ProductService = {
             washCare: updatedProduct.washCare,
             ironCare: updatedProduct.ironCare,
             couponCode: updatedProduct.couponCode,
+            productCode: updatedProduct.productCode,
             rating: updatedProduct.rating || 0,
             numReviews: updatedProduct.numReviews || 0,
             createdAt: updatedProduct.createdAt?.toString(),
@@ -871,6 +877,7 @@ export const ProductService = {
             grossWeight: product.grossWeight,
             netWeight: product.netWeight,
             purity: product.purity,
+            productCode: product.productCode,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));

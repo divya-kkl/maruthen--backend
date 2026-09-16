@@ -35,6 +35,7 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    productCode: String
     grossWeight: Float
     netWeight: Float
     purity: String
@@ -75,6 +76,7 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    productCode: String
     grossWeight: Float
     netWeight: Float
     purity: String
@@ -105,6 +107,7 @@ export const ProductType = gql`
     washCare: String
     ironCare: String
     couponCode: String
+    productCode: String
     grossWeight: Float
     netWeight: Float
     purity: String
