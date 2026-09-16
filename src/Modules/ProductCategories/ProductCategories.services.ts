@@ -64,6 +64,8 @@ export const ProductCategoryService = {
         };
     },
 
+    
+
     async createProductCategory(input: any) {
         const newCategory = await productCategoryMOdel.create(input);
         return {

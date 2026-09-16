@@ -27,6 +27,9 @@ export const ProductResolver = {
         searchProducts: async (_: any, __: any, context: any) => {
             return ProductService.searchProducts(__.search, __.page, __.limit, __.filters);
         },
+        getProductsBySubCategoryCode: async (_: any, __: any, context: any) => {
+            return ProductService.getProductsBySubCategoryCode(__.code, __.search, __.page, __.limit, __.sort, __.filters);
+        },
     },
     Mutation: {
         createProduct: async (_: any, __: any, context: any) => {
