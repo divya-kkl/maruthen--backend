@@ -180,6 +180,7 @@ export const ProductType = gql`
     getCategoryFilters(code: String!): CategoryFilters
     getRelatedProducts(productId: ID!, limit: Int): [Product]!
     searchProducts(search: String, page: Int, limit: Int, filters: ProductFilterInput): ProductResponse
+    getProductsBySubCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
   }
 
   type Mutation {
