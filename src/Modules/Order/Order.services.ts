@@ -194,8 +194,9 @@ export const OrderService = {
         }
 
         let subTotal = 0;
+        let finalItemsTotal = 0;
         const items = [];
-        let cart = null;
+        let cart: any = null;
 
         if (input.guestCartItems && input.guestCartItems.length > 0) {
             for (const item of input.guestCartItems) {
@@ -203,11 +204,12 @@ export const OrderService = {
                 if (!product) {
                     throw new Error(`Product not found for id: ${item.productId}`);
                 }
-                subTotal += product.price * item.quantity;
+                const priceToUse = item.price > 0 ? item.price : product.price;
+                finalItemsTotal += priceToUse * item.quantity;
                 items.push({
                     productId: product._id,
                     quantity: item.quantity,
-                    price: product.price,
+                    price: priceToUse,
                     mrp: product.mrp,
                     name: product.name,
                     image: product.images?.[0] || "no-image-available",
@@ -226,7 +228,9 @@ export const OrderService = {
                     throw new Error(`Product not found for id: ${cartProduct.productId}`);
                 }
 
-                subTotal += product.price * cartProduct.quantity;
+                // cartProducts usually don't have the dynamic price, so this might still be 0
+                // but since frontend now always passes guestCartItems, this branch is rarely used
+                finalItemsTotal += product.price * cartProduct.quantity;
                 items.push({
                     productId: product._id,
                     quantity: cartProduct.quantity,
@@ -246,15 +250,19 @@ export const OrderService = {
             const coupon = await couponModel.findOne({ code: input.couponCode });
             if (coupon && coupon.isActive) {
                 if (coupon.type === "PERCENTAGE") {
-                    discountAmount = subTotal * (coupon.value / 100);
+                    discountAmount = finalItemsTotal * (coupon.value / 100);
                 } else {
                     discountAmount = coupon.value;
                 }
                 isCouponApplied = true;
             }
         }
+        
+        // Calculate subTotal as the base gold price (total minus mc, hmc, gst)
+        subTotal = finalItemsTotal - (input.mc || 0) - (input.hmc || 0) - (input.gst || 0);
+        if (subTotal < 0) subTotal = 0;
 
-        const totalAmount = Math.max(0, subTotal + (input.deliveryCharge || 0) - discountAmount);
+        const totalAmount = Math.max(0, finalItemsTotal + (input.deliveryCharge || 0) - discountAmount);
         const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
 
         let paymentStatus = "PENDING";
@@ -1092,6 +1100,7 @@ export const OrderService = {
         }
     }
 };
+
 
 
 
