@@ -9,6 +9,9 @@ export const ProductResolver = {
         getProductById: async (_: any, __: any, context: any) => {
             return ProductService.getProductById(__.id);
         },
+        getProductBySlug: async (_: any, __: any, context: any) => {
+            return ProductService.getProductBySlug(__.slug);
+        },
         getProduct: async (_: any, __: any, context: any) => {
             return ProductService.getAllProducts(__.search, __.page, __.limit);
         },

@@ -102,6 +102,7 @@ export const ProductService = {
             productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -229,6 +230,7 @@ export const ProductService = {
             productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -419,6 +421,7 @@ export const ProductService = {
             ironCare: product.ironCare,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -593,6 +596,7 @@ export const ProductService = {
             ironCare: product.ironCare,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -743,6 +747,52 @@ export const ProductService = {
         };
     },
 
+    async getProductBySlug(slug: string) {
+        const formattedSlug = slug.toLowerCase();
+        const product = await productModel.findOne({ slug: formattedSlug }).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags");
+        if (!product) {
+            throw new Error("Product not found");
+        }
+        return {
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            hasSize: product.hasSize,
+            isFeatured: product.isFeatured,
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
+            productSubCategoriesID: (product.productSubCategoriesID as any)?._id?.toString() || product.productSubCategoriesID?.toString() || "",
+            productSubCategoriesCode: (product.productSubCategoriesID as any)?.code || "",
+            productSubCategories: product.productSubCategoriesID,
+            tags: product.tags,
+            variants: product.variants,
+            description: product.description,
+            grossWeight: product.grossWeight,
+            netWeight: product.netWeight,
+            purity: product.purity,
+            material: product.material,
+            embellishment: product.embellishment,
+            neck: product.neck,
+            sleeves: product.sleeves,
+            closure: product.closure,
+            lining: product.lining,
+            washCare: product.washCare,
+            ironCare: product.ironCare,
+            couponCode: product.couponCode,
+            productCode: product.productCode,
+            rating: product.rating || 0,
+            numReviews: product.numReviews || 0,
+            slug: product.slug,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
+        };
+    },
+
     async getProductById(id: string) {
         const product = await productModel.findById(id).populate("productCategoriesID").populate("productSubCategoriesID").populate("tags");
         if (!product) {
@@ -782,12 +832,16 @@ export const ProductService = {
             productCode: product.productCode,
             rating: product.rating || 0,
             numReviews: product.numReviews || 0,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         };
     },
 
     async createProduct(input: any) {
+        if (input.name) {
+            input.slug = input.name.toLowerCase().replace(/[\s_]+/g, '-').replace(/[^\p{L}\p{M}\p{N}-]/gu, '').replace(/^-+|-+$/g, '');
+        }
         if (input.mrp !== undefined) {
             const discount = input.discountPercentage || 0;
             if (input.price === undefined) {
@@ -827,12 +881,16 @@ export const ProductService = {
             productCode: newProduct.productCode,
             rating: newProduct.rating || 0,
             numReviews: newProduct.numReviews || 0,
+            slug: newProduct.slug,
             createdAt: newProduct.createdAt?.toString(),
             updatedAt: (newProduct as any).updatedAt?.toString()
         };
     },
 
     async updateProduct(id: string, input: any) {
+        if (input.name) {
+            input.slug = input.name.toLowerCase().replace(/[\s_]+/g, '-').replace(/[^\p{L}\p{M}\p{N}-]/gu, '').replace(/^-+|-+$/g, '');
+        }
         if (input.mrp !== undefined || input.discountPercentage !== undefined) {
             const product = await productModel.findById(id);
             if (product) {
@@ -879,6 +937,7 @@ export const ProductService = {
             productCode: updatedProduct.productCode,
             rating: updatedProduct.rating || 0,
             numReviews: updatedProduct.numReviews || 0,
+            slug: updatedProduct.slug,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()
         };
@@ -935,6 +994,7 @@ export const ProductService = {
             productCode: updatedProduct.productCode,
             rating: updatedProduct.rating || 0,
             numReviews: updatedProduct.numReviews || 0,
+            slug: updatedProduct.slug,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()
         };
@@ -1060,6 +1120,7 @@ export const ProductService = {
             netWeight: product.netWeight,
             purity: product.purity,
             productCode: product.productCode,
+            slug: product.slug,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
@@ -1137,6 +1198,7 @@ export const ProductService = {
             couponCode: p.couponCode,
             rating: p.rating || 0,
             numReviews: p.numReviews || 0,
+            slug: p.slug,
             createdAt: p.createdAt?.toString(),
             updatedAt: (p as any).updatedAt?.toString()
         }));

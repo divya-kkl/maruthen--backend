@@ -43,6 +43,7 @@ export const ProductType = gql`
     updatedAt: String
     rating: Float
     numReviews: Int
+    slug: String
   }
 
   input VariantInput {
@@ -177,6 +178,7 @@ export const ProductType = gql`
     getAllProducts(search: String, page: Int, limit: Int, filters: ProductFilterInput): ProductResponse
 
     getProductById(id: ID!): Product
+    getProductBySlug(slug: String!): Product
     getProduct(search: String, page: Int, limit: Int): ProductResponse
     getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
     getProductsByTagCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
