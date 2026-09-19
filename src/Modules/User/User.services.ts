@@ -82,6 +82,11 @@ export const UserService = {
         if (!password) {
             throw new Error("Password is required");
         }
+        
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            throw new Error("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+        }
         if (!email) {
             throw new Error("Email is required");
         }
@@ -211,6 +216,10 @@ export const UserService = {
     async updateUser(id: string, input: any) {
 
         if (input.password) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(input.password)) {
+                throw new Error("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            }
             const salt = await bcrypt.genSalt(10);
             input.password = await bcrypt.hash(input.password, salt);
         }
