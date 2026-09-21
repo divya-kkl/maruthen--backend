@@ -5,7 +5,7 @@ export const RateService = {
   createRate: async (input: any) => {
     try {
       if (input.isCurrent) {
-         // Instead of updating, copy existing to RateHistory and delete
+      
          const existingRates = await Rate.find({ type: input.type, isCurrent: true });
          for (const existingRate of existingRates) {
            const historyData: any = existingRate.toObject();
@@ -53,9 +53,9 @@ export const RateService = {
   getRateHistory: async (type?: string) => {
     try {
       const query = type ? { type } : {};
-      console.log("[DEBUG] getRateHistory querying RateHistory with:", query);
+   
       const rates = await RateHistory.find(query).sort({ createdAt: -1 });
-      console.log("[DEBUG] RateHistory rates found:", rates.length);
+     
       return rates;
     } catch (error: any) {
       throw new Error(`Failed to fetch rate history: ${error.message}`);
@@ -64,13 +64,13 @@ export const RateService = {
 
   updateRate: async (id: string, input: any) => {
     try {
-      console.log(`[DEBUG] updateRate called for id: ${id}`);
+    
       const existingRate = await Rate.findById(id);
       if (!existingRate) {
         throw new Error("Rate not found");
       }
 
-      // 1. பழைய டேட்டாவை `RateHistory` Collection-ல் சேமிப்பது
+
       const oldRateData: any = existingRate.toObject();
       delete oldRateData._id;
       delete oldRateData.id; 
@@ -81,14 +81,14 @@ export const RateService = {
 
       const historyRate = new RateHistory(oldRateData);
       await historyRate.save();
-      console.log(`[DEBUG] Saved old data to RateHistory collection`);
+   
 
-      // 2. `Rate` Collection-ல் உள்ள பழைய டேட்டாவையே புதிய Amount-க்கு Overwrite செய்வது
+    
       const updatedRate = await Rate.findByIdAndUpdate(id, { ...input, isCurrent: true }, { new: true });
-      console.log(`[DEBUG] Updated Rate collection successfully`);
+    
       return updatedRate;
     } catch (error: any) {
-      console.error(`[DEBUG] Error in updateRate:`, error);
+
       throw new Error(`Failed to update rate: ${error.message}`);
     }
   },
