@@ -15,6 +15,9 @@ export const RateResolver = {
     },
     getCurrentRates: async () => {
       return await RateService.getCurrentRates();
+    },
+    getRateHistory: async (_: any, { type }: { type?: string }) => {
+      return await RateService.getRateHistory(type);
     }
   },
   Mutation: {

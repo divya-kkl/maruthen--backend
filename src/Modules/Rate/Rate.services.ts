@@ -1,10 +1,23 @@
+import RateHistory from "../../DB/MongoDB/Rate/RateHistory.js";
 import Rate from "../../DB/MongoDB/Rate/Rate.js";
 
 export const RateService = {
   createRate: async (input: any) => {
     try {
       if (input.isCurrent) {
-         await Rate.updateMany({ type: input.type, isCurrent: true }, { isCurrent: false });
+         // Instead of updating, copy existing to RateHistory and delete
+         const existingRates = await Rate.find({ type: input.type, isCurrent: true });
+         for (const existingRate of existingRates) {
+           const historyData: any = existingRate.toObject();
+           delete historyData._id;
+           delete historyData.id;
+           delete historyData.createdAt;
+           delete historyData.updatedAt;
+           delete historyData.__v;
+           historyData.isCurrent = false;
+           await new RateHistory(historyData).save();
+         }
+         await Rate.deleteMany({ type: input.type, isCurrent: true });
       }
       const newRate = new Rate(input);
       return await newRate.save();
@@ -37,19 +50,45 @@ export const RateService = {
     }
   },
 
+  getRateHistory: async (type?: string) => {
+    try {
+      const query = type ? { type } : {};
+      console.log("[DEBUG] getRateHistory querying RateHistory with:", query);
+      const rates = await RateHistory.find(query).sort({ createdAt: -1 });
+      console.log("[DEBUG] RateHistory rates found:", rates.length);
+      return rates;
+    } catch (error: any) {
+      throw new Error(`Failed to fetch rate history: ${error.message}`);
+    }
+  },
+
   updateRate: async (id: string, input: any) => {
     try {
-      if (input.isCurrent && input.type) {
-         await Rate.updateMany({ type: input.type, isCurrent: true }, { isCurrent: false });
-      } else if (input.isCurrent) {
-         const existingRate = await Rate.findById(id);
-         if (existingRate) {
-           const query = existingRate.type ? { type: existingRate.type, isCurrent: true } : { isCurrent: true };
-           await Rate.updateMany(query, { isCurrent: false });
-         }
+      console.log(`[DEBUG] updateRate called for id: ${id}`);
+      const existingRate = await Rate.findById(id);
+      if (!existingRate) {
+        throw new Error("Rate not found");
       }
-      return await Rate.findByIdAndUpdate(id, input, { new: true });
+
+      // 1. பழைய டேட்டாவை `RateHistory` Collection-ல் சேமிப்பது
+      const oldRateData: any = existingRate.toObject();
+      delete oldRateData._id;
+      delete oldRateData.id; 
+      delete oldRateData.createdAt;
+      delete oldRateData.updatedAt;
+      delete oldRateData.__v;
+      oldRateData.isCurrent = false;
+
+      const historyRate = new RateHistory(oldRateData);
+      await historyRate.save();
+      console.log(`[DEBUG] Saved old data to RateHistory collection`);
+
+      // 2. `Rate` Collection-ல் உள்ள பழைய டேட்டாவையே புதிய Amount-க்கு Overwrite செய்வது
+      const updatedRate = await Rate.findByIdAndUpdate(id, { ...input, isCurrent: true }, { new: true });
+      console.log(`[DEBUG] Updated Rate collection successfully`);
+      return updatedRate;
     } catch (error: any) {
+      console.error(`[DEBUG] Error in updateRate:`, error);
       throw new Error(`Failed to update rate: ${error.message}`);
     }
   },
