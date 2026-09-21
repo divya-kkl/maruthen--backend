@@ -37,6 +37,7 @@ export interface IProduct extends Document {
     productCode?: string;
     rating?: number;
     numReviews?: number;
+    slug?: string;
 }
 
 const VariantSchema: Schema = new Schema({
@@ -124,6 +125,9 @@ const ProductSchema: Schema = new Schema({
     numReviews: {
         type: Number,
         default: 0
+    },
+    slug: {
+        type: String
     }
 }, { timestamps: true });
 
