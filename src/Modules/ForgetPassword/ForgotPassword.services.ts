@@ -14,7 +14,7 @@ export const ForgotPasswordService = {
 
 
         const resetToken = signToken({ id: user._id, email: user.email });
-        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}&id=${user._id}`;
+        const resetLink = `${process.env.FRONTEND_URL }/reset-password?token=${resetToken}&id=${user._id}`;
 
         const emailTemplateHTML = `
 <!DOCTYPE html>
