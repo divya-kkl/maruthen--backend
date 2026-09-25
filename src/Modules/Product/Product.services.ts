@@ -72,6 +72,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -200,6 +202,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -393,6 +397,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -568,6 +574,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -757,6 +765,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -802,6 +812,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -848,12 +860,16 @@ export const ProductService = {
                 input.price = input.mrp - (input.mrp * (discount / 100));
             }
         }
+        if (input.productSubCategoriesID === '') delete input.productSubCategoriesID;
+        if (input.productCategoriesID === '') delete input.productCategoriesID;
         let newProduct = await productModel.create(input);
         newProduct = await newProduct.populate([{ path: "productCategoriesID" }, { path: "productSubCategoriesID" }, { path: "tags" }]);
         return {
             id: newProduct._id,
             name: newProduct.name,
             price: newProduct.price,
+            mc: newProduct.mc,
+            mcType: newProduct.mcType,
             mrp: newProduct.mrp,
             discountPercentage: newProduct.discountPercentage,
             images: newProduct.images,
@@ -901,6 +917,8 @@ export const ProductService = {
                 }
             }
         }
+        if (input.productSubCategoriesID === '') delete input.productSubCategoriesID;
+        if (input.productCategoriesID === '') delete input.productCategoriesID;
         let updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedProduct) {
             throw new Error("Product not found");
@@ -910,6 +928,8 @@ export const ProductService = {
             id: updatedProduct._id,
             name: updatedProduct.name,
             price: updatedProduct.price,
+            mc: updatedProduct.mc,
+            mcType: updatedProduct.mcType,
             mrp: updatedProduct.mrp,
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
@@ -967,6 +987,8 @@ export const ProductService = {
             id: updatedProduct._id,
             name: updatedProduct.name,
             price: updatedProduct.price,
+            mc: updatedProduct.mc,
+            mcType: updatedProduct.mcType,
             mrp: updatedProduct.mrp,
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
@@ -1101,6 +1123,8 @@ export const ProductService = {
             id: product._id,
             name: product.name,
             price: product.price,
+            mc: product.mc,
+            mcType: product.mcType,
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
@@ -1172,6 +1196,8 @@ export const ProductService = {
             id: p._id,
             name: p.name,
             price: p.price,
+            mc: p.mc,
+            mcType: p.mcType,
             mrp: p.mrp,
             discountPercentage: p.discountPercentage,
             images: p.images,
