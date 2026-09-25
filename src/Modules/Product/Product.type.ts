@@ -38,8 +38,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     netWeight: Float
-    purity: String
-    createdAt: String
+    purity: String    mc: Float    createdAt: String
     updatedAt: String
     rating: Float
     numReviews: Int
@@ -80,8 +79,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     netWeight: Float
-    purity: String
-  }
+    purity: String    mc: Float  }
 
   input UpdateProductInput {
     name: String
@@ -111,8 +109,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     netWeight: Float
-    purity: String
-  }
+    purity: String    mc: Float  }
 
   type FilterOption {
     name: String!
