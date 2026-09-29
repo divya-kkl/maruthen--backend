@@ -600,7 +600,8 @@ export const ProductService = {
             numReviews: product.numReviews || 0,
             slug: product.slug,
             createdAt: product.createdAt?.toString(),
-            updatedAt: (product as any).updatedAt?.toString()
+            updatedAt: (product as any).updatedAt?.toString(),
+            mc:product.mc
         }));
 
         const categoryFilters = await ProductService.getCategoryFilters(code);
