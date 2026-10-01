@@ -37,7 +37,7 @@ export const OrderType = gql`
     deliveryCharge: Float!
     totalAmount: Float!
     mc: Float
-    hmc: Float
+
     gst: Float
     status: String!
     paymentStatus: String!
@@ -93,7 +93,7 @@ export const OrderType = gql`
     email: String
     guestCartItems: [OrderItemInput!]
     mc: Float
-    hmc: Float
+
     gst: Float
   }
 

@@ -7,8 +7,6 @@ export interface IRateHistory extends Document {
   amount: number;
   type?: string;
   isCurrent: boolean;
-  hmc?: number;
-  hmcType?: string;
   gst?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -39,16 +37,6 @@ const RateHistorySchema: Schema = new Schema(
     isCurrent: {
       type: Boolean,
       default: false,
-    },
-    hmc: {
-      type: Number,
-      required: false,
-    },
-    hmcType:{
-      type: String,
-      enum: ['percentage', 'flat'],
-      default: 'percentage',
-      required: false,
     },
     gst: {
       type: Number,

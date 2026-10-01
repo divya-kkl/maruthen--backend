@@ -45,7 +45,6 @@ export const OrderService = {
                 deliveryCharge: item.deliveryCharge,
                 totalAmount: item.totalAmount,
                 mc: item.mc,
-                hmc: item.hmc,
                 gst: item.gst,
                 status: item.status,
                 paymentStatus: item.paymentStatus,
@@ -126,7 +125,6 @@ export const OrderService = {
             deliveryCharge: item.deliveryCharge,
             totalAmount: item.totalAmount,
             mc: item.mc,
-            hmc: item.hmc,
             gst: item.gst,
             status: item.status,
             paymentStatus: item.paymentStatus,
@@ -258,8 +256,8 @@ export const OrderService = {
             }
         }
         
-        // Calculate subTotal as the base gold price (total minus mc, hmc, gst)
-        subTotal = finalItemsTotal - (input.mc || 0) - (input.hmc || 0) - (input.gst || 0);
+        // Calculate subTotal as the base gold price (total minus mc, gst)
+        subTotal = finalItemsTotal - (input.mc || 0) - (input.gst || 0);
         if (subTotal < 0) subTotal = 0;
 
         const totalAmount = Math.max(0, finalItemsTotal + (input.deliveryCharge || 0) - discountAmount);
@@ -297,7 +295,6 @@ export const OrderService = {
             couponCode: isCouponApplied ? input.couponCode : undefined,
             isCouponApplied,
             mc: input.mc,
-            hmc: input.hmc ,
             gst: input.gst 
         };
 
@@ -690,36 +687,7 @@ export const OrderService = {
                 }
 
 
-                <!-- ================= HALLMARK CHARGES ================= -->
 
-                ${
-                  input.hmc
-                    ? `
-                    <tr>
-
-                      <td style="
-                        padding:12px 0;
-                        color:#6b7280;
-                        font-size:14px;
-                      ">
-                        Hallmark Charges (HMC)
-                      </td>
-
-                      <td
-                        align="right"
-                        style="
-                          padding:12px 0;
-                          color:#111827;
-                          font-size:14px;
-                        "
-                      >
-                        ₹${input.hmc}
-                      </td>
-
-                    </tr>
-                    `
-                    : ''
-                }
 
 
                 <!-- ================= GST ================= -->
@@ -1007,7 +975,6 @@ export const OrderService = {
             deliveryCharge: populatedOrder.deliveryCharge,
             totalAmount: populatedOrder.totalAmount,
             mc: populatedOrder.mc,
-            hmc: populatedOrder.hmc,
             gst: populatedOrder.gst,
             status: populatedOrder.status,
             paymentStatus: populatedOrder.paymentStatus,
@@ -1057,7 +1024,6 @@ export const OrderService = {
             deliveryCharge: item.deliveryCharge,
             totalAmount: item.totalAmount,
             mc: item.mc,
-            hmc: item.hmc,
             gst: item.gst,
             status: item.status,
             paymentStatus: item.paymentStatus,

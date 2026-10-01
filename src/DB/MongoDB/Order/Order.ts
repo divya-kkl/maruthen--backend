@@ -34,7 +34,6 @@ export interface IOrder extends Document {
     deliveryCharge: number;
     totalAmount?: number;
     mc?: number;
-    hmc?: number;
     gst?: number;
     status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
@@ -196,9 +195,7 @@ const OrderSchema = new Schema<IOrder>({
     mc: {
         type: Number
     },
-    hmc: {
-        type: Number
-    },
+
     gst: {
         type: Number
     }

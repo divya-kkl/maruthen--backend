@@ -11,8 +11,6 @@ export const RateType = gql`
     isCurrent: Boolean
     mc: Float
     mcType: String
-    hmc: Float
-    hmcType: String
     gst: Float
     createdAt: String
     updatedAt: String
@@ -27,8 +25,6 @@ export const RateType = gql`
     isCurrent: Boolean
     mc: Float
     mcType: String
-    hmc: Float
-    hmcType: String
     gst: Float
   }
 
@@ -41,8 +37,6 @@ export const RateType = gql`
     isCurrent: Boolean
     mc: Float
     mcType: String
-    hmc: Float
-    hmcType: String
     gst: Float
   }
 
