@@ -7,8 +7,6 @@ export interface IRate extends Document {
   amount: number;
   type?: string;
   isCurrent: boolean;
-  hmc?: number;
-  hmcType?: string;
   gst?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -43,16 +41,6 @@ const RateSchema: Schema = new Schema(
       default: true,
     },
    
-    hmc: {
-      type: Number,
-      required: false,
-    },
-    hmcType:{
-      type: String,
-      enum: ['percentage', 'flat'],
-      default: 'percentage',
-      required: false,
-    },
     gst: {
       type: Number,
       required: false,
