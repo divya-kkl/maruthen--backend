@@ -20,6 +20,7 @@ const populateCartItems = async (items: any[]) => {
                 totalPrice: totalPrice,
                 size: item.size || "Default",
                 grossWeight: product.grossWeight,
+                diamondWeight: product.diamondWeight,
                 netWeight: product.netWeight,
                 purity: product.purity
             });
