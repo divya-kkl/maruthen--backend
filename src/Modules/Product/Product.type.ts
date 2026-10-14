@@ -37,6 +37,7 @@ export const ProductType = gql`
     couponCode: String
     productCode: String
     grossWeight: Float
+    diamondWeight: Float
     netWeight: Float
     purity: String    mc: Float    createdAt: String
     updatedAt: String
@@ -78,6 +79,7 @@ export const ProductType = gql`
     couponCode: String
     productCode: String
     grossWeight: Float
+    diamondWeight: Float
     netWeight: Float
     purity: String    mc: Float  }
 
@@ -108,6 +110,7 @@ export const ProductType = gql`
     couponCode: String
     productCode: String
     grossWeight: Float
+    diamondWeight: Float
     netWeight: Float
     purity: String    mc: Float  }
 

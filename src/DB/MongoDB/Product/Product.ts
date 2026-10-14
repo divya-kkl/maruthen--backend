@@ -29,6 +29,7 @@ export interface IProduct extends Document {
     washCare?: string;
     ironCare?: string;
     grossWeight?: number;
+    diamondWeight?: number;
     netWeight?: number;
     purity?: string;
     createdAt?: Date;
@@ -117,6 +118,7 @@ const ProductSchema: Schema = new Schema({
     couponCode: { type: String },
     productCode: { type: String },
     grossWeight: { type: Number },
+    diamondWeight: { type: Number },
     netWeight: { type: Number },
     purity: { type: String },
     rating: {
