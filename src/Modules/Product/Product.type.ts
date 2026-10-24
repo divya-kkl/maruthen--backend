@@ -38,6 +38,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     diamondWeight: Float
+    gemstoneName: String
     netWeight: Float
     purity: String    mc: Float    createdAt: String
     updatedAt: String
@@ -80,6 +81,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     diamondWeight: Float
+    gemstoneName: String
     netWeight: Float
     purity: String    mc: Float  }
 
@@ -111,6 +113,7 @@ export const ProductType = gql`
     productCode: String
     grossWeight: Float
     diamondWeight: Float
+    gemstoneName: String
     netWeight: Float
     purity: String    mc: Float  }
 

@@ -21,6 +21,7 @@ const populateCartItems = async (items: any[]) => {
                 size: item.size || "Default",
                 grossWeight: product.grossWeight,
                 diamondWeight: product.diamondWeight,
+                gemstoneName: product.gemstoneName,
                 netWeight: product.netWeight,
                 purity: product.purity
             });

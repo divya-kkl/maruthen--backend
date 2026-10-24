@@ -30,6 +30,7 @@ export interface IProduct extends Document {
     ironCare?: string;
     grossWeight?: number;
     diamondWeight?: number;
+    gemstoneName?: string;
     netWeight?: number;
     purity?: string;
     createdAt?: Date;
@@ -119,6 +120,7 @@ const ProductSchema: Schema = new Schema({
     productCode: { type: String },
     grossWeight: { type: Number },
     diamondWeight: { type: Number },
+    gemstoneName: { type: String },
     netWeight: { type: Number },
     purity: { type: String },
     rating: {
