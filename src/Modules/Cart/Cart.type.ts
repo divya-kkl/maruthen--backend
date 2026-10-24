@@ -12,6 +12,7 @@ export const CartType = gql`
     size: String!
     grossWeight: Float
     diamondWeight: Float,
+    gemstoneName: String,
     netWeight: Float
     purity: String
   }
