@@ -132,6 +132,11 @@ export const ProductType = gql`
     max: Float!
   }
 
+  type WeightRange {
+    min: Float!
+    max: Float!
+  }
+
   type StockFilter {
     inStock: Int!
     outOfStock: Int!
@@ -143,6 +148,7 @@ export const ProductType = gql`
     brands: [FilterOption]!
     stock: StockFilter!
     price: PriceRange!
+    weight: WeightRange
     dynamicFilters: [DynamicFilter]!
   }
 
@@ -153,6 +159,11 @@ export const ProductType = gql`
   }
 
   input PriceRangeInput {
+    min: Float
+    max: Float
+  }
+
+  input WeightRangeInput {
     min: Float
     max: Float
   }
@@ -168,6 +179,7 @@ export const ProductType = gql`
     brands: [String]
     stock: [String]
     price: PriceRangeInput
+    weight: WeightRangeInput
     dynamicFilters: [DynamicFilterInput]
   }
 

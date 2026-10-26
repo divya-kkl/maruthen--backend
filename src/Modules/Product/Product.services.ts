@@ -43,6 +43,17 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.weight && (filters.weight.min > 0 || filters.weight.max > 0)) {
+                const weightQuery: any = {};
+                if (filters.weight.min >= 0) weightQuery.$gte = filters.weight.min;
+                if (filters.weight.max > 0) weightQuery.$lte = filters.weight.max;
+                andConditions.push({
+                    $or: [
+                        { netWeight: weightQuery },
+                        { grossWeight: weightQuery }
+                    ]
+                });
+            }
             if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
                 filters.dynamicFilters.forEach((df: any) => {
                     if (df.name === "Material" && df.values.length > 0) {
@@ -174,6 +185,17 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.weight && (filters.weight.min > 0 || filters.weight.max > 0)) {
+                const weightQuery: any = {};
+                if (filters.weight.min >= 0) weightQuery.$gte = filters.weight.min;
+                if (filters.weight.max > 0) weightQuery.$lte = filters.weight.max;
+                andConditions.push({
+                    $or: [
+                        { netWeight: weightQuery },
+                        { grossWeight: weightQuery }
+                    ]
+                });
+            }
             if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
                 filters.dynamicFilters.forEach((df: any) => {
                     if (df.name === "Material" && df.values.length > 0) {
@@ -279,6 +301,7 @@ export const ProductService = {
                     sizes: [], colors: [], brands: [],
                     stock: { inStock: 0, outOfStock: 0 },
                     price: { min: 0, max: 0 },
+                    weight: { min: 0, max: 0 },
                     dynamicFilters: []
                 },
                 totalCount: 0
@@ -337,6 +360,17 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.weight && (filters.weight.min > 0 || filters.weight.max > 0)) {
+                const weightQuery: any = {};
+                if (filters.weight.min >= 0) weightQuery.$gte = filters.weight.min;
+                if (filters.weight.max > 0) weightQuery.$lte = filters.weight.max;
+                andConditions.push({
+                    $or: [
+                        { netWeight: weightQuery },
+                        { grossWeight: weightQuery }
+                    ]
+                });
+            }
             if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
                 filters.dynamicFilters.forEach((df: any) => {
                     if (df.name === "Material" && df.values.length > 0) {
@@ -358,11 +392,26 @@ export const ProductService = {
         let sortOption: any = { updatedAt: -1, createdAt: -1 };
         let useCollation = false;
         if (sort) {
-            switch (sort) {
+            switch (sort.toLowerCase()) {
+                case 'weight-low':
+                case 'weight-asc':
+                case 'weight_asc':
+                    sortOption = { netWeight: 1, grossWeight: 1 };
+                    break;
+                case 'weight-high':
+                case 'weight-desc':
+                case 'weight_desc':
+                    sortOption = { netWeight: -1, grossWeight: -1 };
+                    break;
                 case 'price-low':
+                case 'price-asc':
+                case 'price_asc':
+                case 'price':
                     sortOption = { price: 1 };
                     break;
                 case 'price-high':
+                case 'price-desc':
+                case 'price_desc':
                     sortOption = { price: -1 };
                     break;
                 case 'atoz':
@@ -376,6 +425,7 @@ export const ProductService = {
                 case 'features':
                     sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 };
                     break;
+                case 'position':
                 case 'bestselling':
                 case 'most-relevant':
                 default:
@@ -455,6 +505,7 @@ export const ProductService = {
                     sizes: [], colors: [], brands: [],
                     stock: { inStock: 0, outOfStock: 0 },
                     price: { min: 0, max: 0 },
+                    weight: { min: 0, max: 0 },
                     dynamicFilters: []
                 },
                 totalCount: 0
@@ -514,6 +565,17 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.weight && (filters.weight.min > 0 || filters.weight.max > 0)) {
+                const weightQuery: any = {};
+                if (filters.weight.min >= 0) weightQuery.$gte = filters.weight.min;
+                if (filters.weight.max > 0) weightQuery.$lte = filters.weight.max;
+                andConditions.push({
+                    $or: [
+                        { netWeight: weightQuery },
+                        { grossWeight: weightQuery }
+                    ]
+                });
+            }
             if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
                 filters.dynamicFilters.forEach((df: any) => {
                     if (df.name === "Material" && df.values.length > 0) {
@@ -535,11 +597,26 @@ export const ProductService = {
         let sortOption: any = { updatedAt: -1, createdAt: -1 };
         let useCollation = false;
         if (sort) {
-            switch (sort) {
+            switch (sort.toLowerCase()) {
+                case 'weight-low':
+                case 'weight-asc':
+                case 'weight_asc':
+                    sortOption = { netWeight: 1, grossWeight: 1 };
+                    break;
+                case 'weight-high':
+                case 'weight-desc':
+                case 'weight_desc':
+                    sortOption = { netWeight: -1, grossWeight: -1 };
+                    break;
                 case 'price-low':
+                case 'price-asc':
+                case 'price_asc':
+                case 'price':
                     sortOption = { price: 1 };
                     break;
                 case 'price-high':
+                case 'price-desc':
+                case 'price_desc':
                     sortOption = { price: -1 };
                     break;
                 case 'atoz':
@@ -553,6 +630,7 @@ export const ProductService = {
                 case 'features':
                     sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 };
                     break;
+                case 'position':
                 case 'bestselling':
                 case 'most-relevant':
                 default:
@@ -644,6 +722,8 @@ export const ProductService = {
         let outOfStock = 0;
         let minPrice = Infinity;
         let maxPrice = -Infinity;
+        let minWeight = Infinity;
+        let maxWeight = -Infinity;
 
         products.forEach(p => {
             const hasStock = p.variants?.some(v => v.stock > 0);
@@ -652,6 +732,12 @@ export const ProductService = {
 
             if (p.price < minPrice) minPrice = p.price;
             if (p.price > maxPrice) maxPrice = p.price;
+
+            const w = p.netWeight ?? p.grossWeight;
+            if (typeof w === 'number' && !isNaN(w) && w > 0) {
+                if (w < minWeight) minWeight = w;
+                if (w > maxWeight) maxWeight = w;
+            }
 
             if (p.brand) {
                 brands[p.brand] = (brands[p.brand] || 0) + 1;
@@ -670,6 +756,8 @@ export const ProductService = {
 
         if (minPrice === Infinity) minPrice = 0;
         if (maxPrice === -Infinity) maxPrice = 0;
+        if (minWeight === Infinity) minWeight = 0;
+        if (maxWeight === -Infinity) maxWeight = 0;
 
         const dynamicFilters = [];
         if (Object.keys(materials).length > 0) {
@@ -685,6 +773,7 @@ export const ProductService = {
             brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
             price: { min: minPrice, max: maxPrice },
+            weight: { min: minWeight, max: maxWeight },
             dynamicFilters
         };
     },
@@ -698,6 +787,7 @@ export const ProductService = {
                 sizes: [], colors: [], brands: [],
                 stock: { inStock: 0, outOfStock: 0 },
                 price: { min: 0, max: 0 },
+                weight: { min: 0, max: 0 },
                 dynamicFilters: []
             };
         }
@@ -713,6 +803,8 @@ export const ProductService = {
         let outOfStock = 0;
         let minPrice = Infinity;
         let maxPrice = -Infinity;
+        let minWeight = Infinity;
+        let maxWeight = -Infinity;
 
         products.forEach(p => {
             const hasStock = p.variants?.some(v => v.stock > 0);
@@ -721,6 +813,12 @@ export const ProductService = {
 
             if (p.price < minPrice) minPrice = p.price;
             if (p.price > maxPrice) maxPrice = p.price;
+
+            const w = p.netWeight ?? p.grossWeight;
+            if (typeof w === 'number' && !isNaN(w) && w > 0) {
+                if (w < minWeight) minWeight = w;
+                if (w > maxWeight) maxWeight = w;
+            }
 
             if (p.brand) {
                 brands[p.brand] = (brands[p.brand] || 0) + 1;
@@ -739,6 +837,8 @@ export const ProductService = {
 
         if (minPrice === Infinity) minPrice = 0;
         if (maxPrice === -Infinity) maxPrice = 0;
+        if (minWeight === Infinity) minWeight = 0;
+        if (maxWeight === -Infinity) maxWeight = 0;
 
         const dynamicFilters = [];
         if (Object.keys(materials).length > 0) {
@@ -754,6 +854,7 @@ export const ProductService = {
             brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
             price: { min: minPrice, max: maxPrice },
+            weight: { min: minWeight, max: maxWeight },
             dynamicFilters
         };
     },
@@ -1085,6 +1186,17 @@ export const ProductService = {
                 if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
                 andConditions.push({ price: priceQuery });
             }
+            if (filters.weight && (filters.weight.min > 0 || filters.weight.max > 0)) {
+                const weightQuery: any = {};
+                if (filters.weight.min >= 0) weightQuery.$gte = filters.weight.min;
+                if (filters.weight.max > 0) weightQuery.$lte = filters.weight.max;
+                andConditions.push({
+                    $or: [
+                        { netWeight: weightQuery },
+                        { grossWeight: weightQuery }
+                    ]
+                });
+            }
             if (filters.dynamicFilters && filters.dynamicFilters.length > 0) {
                 filters.dynamicFilters.forEach((df: any) => {
                     if (df.name === "Material" && df.values.length > 0) {
@@ -1105,13 +1217,45 @@ export const ProductService = {
         let sortOption: any = { updatedAt: -1, createdAt: -1 };
         let useCollation = false;
         if (sort) {
-            switch (sort) {
-                case 'price-low': sortOption = { price: 1 }; break;
-                case 'price-high': sortOption = { price: -1 }; break;
-                case 'atoz': sortOption = { name: 1 }; useCollation = true; break;
-                case 'ztoa': sortOption = { name: -1 }; useCollation = true; break;
-                case 'features': sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 }; break;
-                default: sortOption = { updatedAt: -1, createdAt: -1 }; break;
+            switch (sort.toLowerCase()) {
+                case 'weight-low':
+                case 'weight-asc':
+                case 'weight_asc':
+                    sortOption = { netWeight: 1, grossWeight: 1 };
+                    break;
+                case 'weight-high':
+                case 'weight-desc':
+                case 'weight_desc':
+                    sortOption = { netWeight: -1, grossWeight: -1 };
+                    break;
+                case 'price-low':
+                case 'price-asc':
+                case 'price_asc':
+                case 'price':
+                    sortOption = { price: 1 };
+                    break;
+                case 'price-high':
+                case 'price-desc':
+                case 'price_desc':
+                    sortOption = { price: -1 };
+                    break;
+                case 'atoz':
+                    sortOption = { name: 1 };
+                    useCollation = true;
+                    break;
+                case 'ztoa':
+                    sortOption = { name: -1 };
+                    useCollation = true;
+                    break;
+                case 'features':
+                    sortOption = { isFeatured: -1, updatedAt: -1, createdAt: -1 };
+                    break;
+                case 'position':
+                case 'bestselling':
+                case 'most-relevant':
+                default:
+                    sortOption = { updatedAt: -1, createdAt: -1 };
+                    break;
             }
         }
 
