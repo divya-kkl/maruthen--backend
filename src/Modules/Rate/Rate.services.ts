@@ -5,19 +5,19 @@ export const RateService = {
   createRate: async (input: any) => {
     try {
       if (input.isCurrent) {
-      
-         const existingRates = await Rate.find({ type: input.type, isCurrent: true });
-         for (const existingRate of existingRates) {
-           const historyData: any = existingRate.toObject();
-           delete historyData._id;
-           delete historyData.id;
-           delete historyData.createdAt;
-           delete historyData.updatedAt;
-           delete historyData.__v;
-           historyData.isCurrent = false;
-           await new RateHistory(historyData).save();
-         }
-         await Rate.deleteMany({ type: input.type, isCurrent: true });
+
+        const existingRates = await Rate.find({ type: input.type, isCurrent: true });
+        for (const existingRate of existingRates) {
+          const historyData: any = existingRate.toObject();
+          delete historyData._id;
+          delete historyData.id;
+          delete historyData.createdAt;
+          delete historyData.updatedAt;
+          delete historyData.__v;
+          historyData.isCurrent = false;
+          await new RateHistory(historyData).save();
+        }
+        await Rate.deleteMany({ type: input.type, isCurrent: true });
       }
       const newRate = new Rate(input);
       return await newRate.save();
@@ -50,21 +50,53 @@ export const RateService = {
     }
   },
 
-  getRateHistory: async (type?: string) => {
+  getRateHistory: async (type?: string, days?: number) => {
     try {
-      const query = type ? { type } : {};
-   
-      const rates = await RateHistory.find(query).sort({ createdAt: -1 });
-     
-      return rates;
+      const filterDays = (typeof days === 'number' && days > 0) ? days : 7;
+
+      let rates = await RateHistory.find().sort({ createdAt: -1 });
+
+      if (type) {
+        const search = type.toLowerCase().trim();
+        rates = rates.filter((item: any) => {
+          const itemType = (item.type || '').toLowerCase();
+          return itemType === search;
+        });
+      }
+
+      const dailyMap = new Map();
+      rates.forEach((item: any) => {
+        const day = new Date(item.createdAt || item.date).toISOString().split('T')[0];
+        const metalKey = (item.type || item.name || '').toLowerCase();
+        const key = `${day}_${metalKey}`;
+        if (!dailyMap.has(key)) {
+          dailyMap.set(key, item);
+        }
+      });
+      const groupedByMetal: { [key: string]: any[] } = {};
+      dailyMap.forEach((item) => {
+        const metalKey = (item.type || item.name || '').toLowerCase();
+        if (!groupedByMetal[metalKey]) {
+          groupedByMetal[metalKey] = [];
+        }
+        groupedByMetal[metalKey].push(item);
+      });
+
+      const finalResult: any[] = [];
+      Object.values(groupedByMetal).forEach((metalRates) => {
+        finalResult.push(...metalRates.slice(0, filterDays));
+      });
+
+      return finalResult;
     } catch (error: any) {
       throw new Error(`Failed to fetch rate history: ${error.message}`);
     }
   },
 
+  
   updateRate: async (id: string, input: any) => {
     try {
-    
+
       const existingRate = await Rate.findById(id);
       if (!existingRate) {
         throw new Error("Rate not found");
@@ -73,7 +105,7 @@ export const RateService = {
 
       const oldRateData: any = existingRate.toObject();
       delete oldRateData._id;
-      delete oldRateData.id; 
+      delete oldRateData.id;
       delete oldRateData.createdAt;
       delete oldRateData.updatedAt;
       delete oldRateData.__v;
@@ -81,11 +113,11 @@ export const RateService = {
 
       const historyRate = new RateHistory(oldRateData);
       await historyRate.save();
-   
 
-    
+
+
       const updatedRate = await Rate.findByIdAndUpdate(id, { ...input, isCurrent: true }, { new: true });
-    
+
       return updatedRate;
     } catch (error: any) {
 

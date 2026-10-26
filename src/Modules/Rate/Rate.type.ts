@@ -44,7 +44,7 @@ export const RateType = gql`
     getAllRates: [Rate]
     getRateById(id: ID!): Rate
     getCurrentRates: [Rate]
-    getRateHistory(type: String): [Rate]
+    getRateHistory(type: String, days: Int): [Rate]
   }
 
   extend type Mutation {
