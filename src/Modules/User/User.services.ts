@@ -1,13 +1,13 @@
 import { userModel } from "../../DB/MongoDB/User/User.js";
+import { UserAddressModel } from "../../DB/MongoDB/UserAddress/UserAddress.js";
 import bcrypt from "bcryptjs";
 import { signToken, verifyToken } from "../../helpers/validation.js";
-
 import { sendEmail } from "../../helpers/resend.js";
 
 export const UserService = {
 
     async getAllUsers(search?: string, page?: number, limit?: number) {
-        let filter = {};
+        let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
             filter = {
@@ -25,8 +25,8 @@ export const UserService = {
             query = query.skip(skip).limit(limit);
         }
 
-        const users = await query;
-        const mappedUsers = users.map((item) => ({
+        const users: any[] = await query;
+        const mappedUsers = users.map((item: any) => ({
             id: item._id,
             username: item.username,
             email: item.email,
@@ -39,7 +39,6 @@ export const UserService = {
             gender: item.gender,
             addresses: item.addresses,
             createdAt: item.createdTime?.toString()
-
         }));
 
         return {
@@ -48,14 +47,12 @@ export const UserService = {
         };
     },
 
-
-
     async getUser(search?: string, page?: number, limit?: number) {
         return UserService.getAllUsers(search, page, limit);
     },
 
     async getUserById(id: string) {
-        const item = await userModel.findById(id);
+        const item: any = await userModel.findById(id);
         if (!item) {
             throw new Error("User not found");
         }
@@ -76,23 +73,23 @@ export const UserService = {
     },
 
     async register(input: any = {}) {
+        const { username, email, country, state, city, address, phone_number, pincode, gender,createdTime,password } = input;
 
-        const { username, email, country, state, city, address, phone_number, pincode, createdTime, gender, password } = input;
-
-        if (!password) {
+       if (!password) {
             throw new Error("Password is required");
         }
-        if (!email) {
-            throw new Error("Email is required");
-        }
+        
         if (pincode && typeof pincode !== 'number') {
             throw new Error("Pincode must be a number");
         }
+        
+        if (!email) {
+            throw new Error("Email is required");
+        }
 
         const exist = await userModel.findOne({ email });
-
         if (exist) {
-            throw new Error("user Already exists with this email")
+            throw new Error("user Already exists with this email");
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -111,7 +108,7 @@ export const UserService = {
 
         const hasAddressInfo = address || city || state || pincode || country;
 
-        const newUser = await userModel.create({
+        const newUser= await userModel.create({
             username,
             email,
             password: hashedPassword,
@@ -125,8 +122,14 @@ export const UserService = {
             addresses: hasAddressInfo ? [initialAddress] : [],
             createdTime: new Date().toString(),
             isEmailVerified: false,
-
         });
+
+        if (hasAddressInfo) {
+            await UserAddressModel.create({
+                userId: newUser._id,
+                ...initialAddress,
+            });
+        }
 
         const token = signToken({ id: newUser._id, email: newUser.email, expiresIn: "15m" });
 
@@ -147,12 +150,10 @@ export const UserService = {
                 isEmailVerified: newUser.isEmailVerified,
             },
             token,
-
         };
     },
 
     async verifyEmail(token: string) {
-
         let decodedToken: any;
         decodedToken = verifyToken(token);
 
@@ -172,19 +173,23 @@ export const UserService = {
             throw new Error("Email and password are required");
         }
 
-        const user = await userModel.findOne({ email, isEmailVerified: true });
+        const user: any = await userModel.findOne({ email, isEmailVerified: true });
+
+        if (!user) {
+            throw new Error("Invalid email or password");
+        }
 
         if (!user?.isEmailVerified) {
             throw new Error("Email not verified");
         }
 
-        if (!user || !user.password) {
+        if (!user|| !user.password) {
             throw new Error("Invalid email or password");
         }
 
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid) {
-            throw new Error("Invalid email or password")
+            throw new Error("Invalid email or password");
         }
 
         const token = signToken({ id: user._id, email: user.email });
@@ -205,20 +210,26 @@ export const UserService = {
             },
             token
         };
-
     },
 
     async updateUser(id: string, input: any) {
-
         if (input.password) {
             const salt = await bcrypt.genSalt(10);
             input.password = await bcrypt.hash(input.password, salt);
         }
 
-        const updatedUser = await userModel.findByIdAndUpdate(id, input, { new: true });
+        if (input.addresses && Array.isArray(input.addresses)) {
+            input.addresses = input.addresses.map((addr: any) => ({
+                ...addr,
+                userId: id,
+            }));
+        }
+
+        const updatedUser: any = await userModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedUser) {
             throw new Error("User not found");
         }
+
         return {
             id: updatedUser._id,
             username: updatedUser.username,
@@ -257,4 +268,4 @@ export const UserService = {
             throw new Error(error.message || "Failed to send email");
         }
     }
-}
+};

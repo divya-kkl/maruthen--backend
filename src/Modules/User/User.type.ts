@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-express"
+import { gql } from "apollo-server-express";
 
 export const UserType = gql`
 
@@ -6,20 +6,6 @@ enum Gender {
   MALE
   FEMALE
   OTHER
-}
-
-type UserAddress {
-  id: ID
-  firstName: String
-  lastName: String
-  address: String
-  apartment: String
-  city: String
-  state: String
-  pincode: Int
-  country: String
-  phone: String
-  isDefault: Boolean
 }
 
 type User {
@@ -50,20 +36,6 @@ input RegisterInput {
   gender: String
 }
 
-input UserAddressInput {
-  id: ID
-  firstName: String
-  lastName: String
-  address: String
-  apartment: String
-  city: String
-  state: String
-  pincode: Int
-  country: String
-  phone: String
-  isDefault: Boolean
-}
-
 input UpdateUserInput {
   username: String
   email: String
@@ -77,26 +49,29 @@ input UpdateUserInput {
   gender: String
   addresses: [UserAddressInput]
 }
-  type RegisterResponse {
+
+type RegisterResponse {
    user: User
    token: String
 }
-   input LoginInput {
-    email: String!
-    password: String!
-}
-    type UserResponse {
-        users: [User]
-        totalCount: Int
-    }
-    type Query {
-    getAllUser(search: String, page: Int, limit: Int): UserResponse
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type UserResponse {
+    users: [User]
+    totalCount: Int
+}
+
+type Query {
+    getAllUser(search: String, page: Int, limit: Int): UserResponse
     getUserById(id: ID!): User
     getUser(search: String, page: Int, limit: Int): UserResponse
 }
     
-    type Mutation {
+type Mutation {
     registerUser(input: RegisterInput): RegisterResponse!
     loginUser(input: LoginInput): RegisterResponse!
     updateUser(id: ID!, input: UpdateUserInput): User!
@@ -104,4 +79,4 @@ input UpdateUserInput {
     sendEmail(to: [String!]!, subject: String!, html: String!): String!
     verifyEmail(token: String!): Boolean!
 }
-`
+`;

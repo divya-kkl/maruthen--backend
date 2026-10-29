@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IAddress {
+    userId?: mongoose.Types.ObjectId;
     firstName?: string;
     lastName?: string;
     address?: string;
@@ -11,6 +12,8 @@ export interface IAddress {
     country?: string;
     phone?: string;
     isDefault?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface IUser extends Document {
@@ -27,21 +30,29 @@ export interface IUser extends Document {
     createdTime: Date;
     gender: string;
     isEmailVerified?: boolean;
-   
 }
 
-const AddressSchema = new Schema<IAddress>({
-    firstName: String,
-    lastName: String,
-    address: String,
-    apartment: String,
-    city: String,
-    state: String,
-    pincode: Number,
-    country: String,
-    phone: String,
-    isDefault: { type: Boolean, default: false }
-});
+const AddressSchema = new Schema<IAddress>(
+    {
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        },
+        firstName: String,
+        lastName: String,
+        address: String,
+        apartment: String,
+        city: String,
+        state: String,
+        pincode: Number,
+        country: String,
+        phone: String,
+        isDefault: { type: Boolean, default: false }
+    },
+    {
+        timestamps: true
+    }
+);
 
 const UserSchema = new Schema<IUser>({
     username: {
