@@ -19,6 +19,7 @@ import { RateType } from "../Modules/Rate/Rate.type.js";
 import { ForgotPasswordType } from "../Modules/ForgetPassword/ForgotPassword.type.js";
 import { VideoType } from "../Modules/video/video.type.js";
 import { ImageType } from "../Modules/image/image.type.js";
+import { userAddressType } from "../Modules/UserAddress/UserAddress.type.js";
 
 export const typeDefs = [
     UserType,
@@ -41,5 +42,6 @@ export const typeDefs = [
     RateType,
     ForgotPasswordType,
     VideoType,
-    ImageType
+    ImageType,
+    userAddressType
 ];

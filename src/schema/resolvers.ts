@@ -13,7 +13,7 @@ import { TopBannerResolver } from "../Modules/TopBanner/TopBanner.resolvers.js";
 import { DeliveryChargerResolver } from "../Modules/DeliveryCharger/DeliveryCharger.resolvers.js";
 import { FAQResolver } from "../Modules/FAQ/FAQ.resolvers.js";
 import { PaymentMethodResolver } from "../Modules/PaymentMethod/PaymentMethod.resolvers.js";
-
+import { userAddressResolver} from "../Modules/UserAddress/UserAddress.resolvers.js"
 import { ReviewResolver } from "../Modules/Review/Review.resolvers.js";
 import { TagResolver } from "../Modules/Tag/Tag.resolvers.js";
 import { WishlistResolver } from "../Modules/Wishlist/Wishlist.resolvers.js";
@@ -43,7 +43,8 @@ const resolversArray = [
     RateResolver,
     ForgotPasswordResolver,
     VideoResolver,
-    ImageResolver
+    ImageResolver,
+    userAddressResolver
 ];
 
 
